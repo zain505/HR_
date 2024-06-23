@@ -6,7 +6,7 @@ const userRoutes = require('./routes/user')
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '50mb'}));
 
 // app.use('/api/places', placesRoutes); // => /api/places...
 app.use('/api/users', userRoutes);

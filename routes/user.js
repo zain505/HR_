@@ -7,11 +7,10 @@ const router = express.Router();
 
 router.get('/', usersController.getUsers);
 
-router.post(
-  '/signup',
-  usersController.signup
-);
+router.post('/signup',usersController.signup);
 
 router.post('/login', usersController.login);
+
+router.post('/create-candidate',usersController.createCandidate)
 
 module.exports = router;
