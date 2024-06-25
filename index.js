@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose=require('mongoose');
 
 const userRoutes = require('./routes/user')
+const candidateRoutes = require('./routes/candidate')
 
 const app = express();
 
@@ -10,6 +11,9 @@ app.use(bodyParser.json({limit: '50mb'}));
 
 // app.use('/api/places', placesRoutes); // => /api/places...
 app.use('/api/users', userRoutes);
+
+app.use('/api/candidate', candidateRoutes);
+
 app.use('/', (req,res,next)=>{
   res.json({message:"server is listning  at 5000"});
 });
