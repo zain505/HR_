@@ -14,6 +14,8 @@ const CandidateSchema = new Schema({
     medical_leaves : {type:Number,required: false},
     contract_details : {type:String,required: false},
     budget : {type:Number,required: false},
+    creationDate:{type:Date,required:true,default: Date.now},
+    lastModifyDate:{type:Date,required:false,default: Date.now}
 })
 
 module.exports=mongoose.model('Candidate',CandidateSchema)

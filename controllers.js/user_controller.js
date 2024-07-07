@@ -4,12 +4,17 @@ const { validationResult } = require('express-validator');
 // const HttpError = require('../models/http-error');
 
 const User = require('../Models/user')
+const jwt = require('jsonwebtoken');
+
+const appConstant = require('../appConstant')
 
 
 
 
 const getUsers = async (req, res, next) => {
+
   const getSignedUpAllUsers = await User.find({});
+
   res.json(getSignedUpAllUsers);
 };
 
@@ -31,7 +36,7 @@ const signup = async (req, res, next) => {
     name, // name: name
     email,
     password,
-    role
+    role,
   });
   try {
     createdUser.save();
@@ -56,7 +61,12 @@ const login = async (req, res, next) => {
 
   }
 
-  res.json(identifiedUser);
+  const token = jwt.sign({data:identifiedUser}, appConstant.secret, {
+    expiresIn: 60,
+  });
+  identifiedUser.token = token
+
+  res.json({token});
 };
 
 

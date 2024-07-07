@@ -7,6 +7,8 @@ const UserSchema = new Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, required: true },
+    creationDate:{type:Date,required:false,default: Date.now()},
+    lastModifyDate:{type:Date,required:false,default: Date.now()}
 })
 
 module.exports=mongoose.model('User',UserSchema)
