@@ -13,4 +13,10 @@ router.post('/signup', verifyToken,usersController.signup);
 
 router.post('/login', usersController.login);
 
+router.post('/delete-user', verifyToken, usersController.deleteUser);
+
+router.post('/update-user', verifyToken, usersController.updateUser);
+
+router.post('/update-user-status', verifyToken, usersController.updateUserStatus);
+
 module.exports = router;

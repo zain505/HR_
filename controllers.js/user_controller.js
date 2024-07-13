@@ -5,6 +5,7 @@ const { validationResult } = require('express-validator');
 
 const User = require('../Models/user')
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const appConstant = require('../appConstant')
 
@@ -37,6 +38,9 @@ const signup = async (req, res, next) => {
     email,
     password,
     role,
+    creationDate:Date.now(),
+    lastModifyDate:Date.now(),
+    isActive:true
   });
   try {
     createdUser.save();
@@ -61,17 +65,70 @@ const login = async (req, res, next) => {
 
   }
 
-  const token = jwt.sign({data:identifiedUser}, appConstant.secret, {
-    expiresIn: 60,
+  const token = jwt.sign({ data: identifiedUser }, appConstant.secret, {
+    expiresIn: "1h",
   });
   identifiedUser.token = token
 
-  res.json({token});
+  res.json({ token });
 };
 
+const deleteUser = async (req, res, next) => {
+  const { id } = req.body;
+
+  const result =  await User.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+
+  if(result ==  null){
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  }else{
+    res.json({ message: "1 record deleted" });
+
+  }
+
+}
+
+const updateUser = async (req, res, next) => {
+  const { name, email, password, role,id, } = req.body;
+
+  if(!name || !email || !password || !role || !id){
+    return res.json({message:"All fields are required"})
+  }
+
+  const updateUser = {
+    name,
+    email,
+    password,
+    role,
+    lastModifyDate:Date.now()
+  }
+
+  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id),updateUser);
+
+  res.json({ message: "record updated" });
+}
+
+const updateUserStatus = async (req, res, next) => {
+  const { isActive ,id } = req.body;
+
+  if(typeof(isActive != Boolean) && !id){
+    return res.json({message:"All fields are required"})
+  }
+
+  const updateUser = {
+    isActive,
+  }
+
+  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id),updateUser);
+
+  res.json({ message: "User Status Updated" });
+}
 
 
 exports.getUsers = getUsers;
 exports.signup = signup;
 exports.login = login;
+exports.deleteUser = deleteUser;
+exports.updateUser = updateUser;
+exports.updateUserStatus = updateUserStatus;
 
