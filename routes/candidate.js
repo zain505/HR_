@@ -8,8 +8,10 @@ const verifyToken = require('../authMiddleWare/authMiddleWare');
 
 const router = express.Router();
 
-router.get('/', verifyToken, candidController.getAllRegisteredCandidates);
+router.get('/pageid=:pageid&pagesize=:pagesize', verifyToken, candidController.getAllRegisteredCandidates);
 
 router.post('/create-candidate', verifyToken, candidController.createCandidate);
+
+router.post('/update-candidate', verifyToken, candidController.updateCandidate);
 
 module.exports = router;
