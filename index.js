@@ -2,9 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose=require('mongoose');
 
-const swaggerUi = require('swagger-ui-express')
-const swaggerFile = require('./swagger_output.json')
-
 const cors = require('cors')
 
 const userRoutes = require('./routes/user')
@@ -22,11 +19,10 @@ app.use('/api/users', userRoutes);
 
 app.use('/api/candidate', candidateRoutes);
 
-app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
-
 app.use('/', (req,res,next)=>{
   res.json({message:"server is listning  at 5000"});
 });
+
 
 app.use((req, res, next) => {
 //   const error = new HttpError('Could not find this route.', 404);

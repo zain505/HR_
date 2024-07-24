@@ -11,9 +11,33 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
   const pagesize = Number(req.params.pagesize);
 
-  const tempAllCandids = await Candidate.find().select('name').limit(pagesize).skip(page * pagesize);
+  const searchStr = req.params.searchstr;
 
-  res.json(tempAllCandids);
+  const tempAllCandids = await Candidate.find({});
+
+  if (searchStr == -1) {
+    if ((tempAllCandids.length > 10) && (page >= 1)) {
+
+      let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
+
+      res.json(sliceData);
+
+    } else {
+
+      res.json(tempAllCandids)
+
+    }
+
+  } else {
+    res.json([])
+  }
+
+
+
+
+
+
+
 }
 
 const createCandidate = async (req, res, next) => {
@@ -32,12 +56,12 @@ const createCandidate = async (req, res, next) => {
   if (!full_name || !father_name || !department_name ||
     !joining_date || !licence_img || !idcard_img ||
     !passport_img || !designation || !experience_in_years ||
-    !candidate_photo || 
+    !candidate_photo ||
     !start_employement_date || !casual_leaves ||
     !annual_leaves || !medical_leaves || !contract_details || !budget) {
     res.status(400).json({ message: "some fields are missing" });
 
-  } else if(isContractedEmployee && !contract_start && !contract_end){
+  } else if (isContractedEmployee && !contract_start && !contract_end) {
     res.status(400).json({ message: "contract start date and end date required" });
   } else {
     const candidate = new Candidate({
