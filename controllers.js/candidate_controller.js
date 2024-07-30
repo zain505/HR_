@@ -13,23 +13,29 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
   const searchStr = req.params.searchstr;
 
-  const tempAllCandids = await Candidate.find({});
+  let tempAllCandids = [];
 
   if (searchStr == -1) {
-    if ((tempAllCandids.length > 10) && (page >= 1)) {
 
-      let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
+    tempAllCandids = await Candidate.find({});
 
-      res.json(sliceData);
+  } else if (searchStr != -1 && typeof (searchStr) != Number) {
+    const regex = new RegExp(searchStr, 'i');
 
-    } else {
+    tempAllCandids = await Candidate.find({ full_name: { $regex: regex } });
+  }
 
-      res.json(tempAllCandids)
 
-    }
+  if ((tempAllCandids.length >= 50) && (page >= 1)) {
+
+    let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
+
+    res.json(sliceData);
 
   } else {
-    res.json([])
+
+    res.json(tempAllCandids)
+
   }
 
 
