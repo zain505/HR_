@@ -61,7 +61,7 @@ const createCandidate = async (req, res, next) => {
     !passport_img || !designation || !experience_in_years ||
     !candidate_photo ||
     !casual_leaves ||
-    !annual_leaves || !medical_leaves || !contract_details || !budget) {
+    !annual_leaves || !medical_leaves || !budget) {
     res.status(400).json({ message: "some fields are missing" });
 
   } else if (isContractedEmployee && !contract_start && !contract_end) {
