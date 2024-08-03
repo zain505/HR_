@@ -22,7 +22,6 @@ const CandidateSchema = new Schema({
     budget: { type: Number, required: false },
     creationDate: { type: String, required: false, default: Date.now },
     lastModifyDate: { type: String, required: false, default: Date.now },
-    start_employement_date: { type: String, required: false, default: Date.now },
     isEmployee: { type: Boolean, required: false, default: false },
     isContractedEmployee: { type: Boolean, required: false, default: false },
     contract_start: { type: String, required: false, default: false },

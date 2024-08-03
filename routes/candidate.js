@@ -2,7 +2,7 @@ const express = require('express');
 
 const { check } = require('express-validator');
 
-const candidController = require('../controllers.js/candidate_controller');
+const candidController = require('../controllers/candidate_controller');
 
 const verifyToken = require('../authMiddleWare/authMiddleWare');
 
