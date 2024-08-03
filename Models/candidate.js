@@ -20,14 +20,16 @@ const CandidateSchema = new Schema({
     is_candidate_on_reference: { type: Boolean, required: false },
     reference_name: { type: String, required: false },
     budget: { type: Number, required: false },
-    creationDate: { type: String, required: false, default: Date.now },
-    lastModifyDate: { type: String, required: false, default: Date.now },
+    creationDate: { type: Date, required: false },
+    lastModifyDate: { type: Date, required: false },
     isEmployee: { type: Boolean, required: false, default: false },
     isContractedEmployee: { type: Boolean, required: false, default: false },
     contract_start: { type: String, required: false, default: false },
     contract_end: { type: String, required: false, default: false },
     candidate_cv: { type: String, required: false },
     is_candidate_approved_by_admin_for_interview: { type: Boolean, required: false, default: false },
+    candidate_status:{ type: String, required: false },
+    candidate_process_step:{ type: Number, required: false }
     
 })
 

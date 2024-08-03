@@ -14,4 +14,8 @@ router.post('/create-candidate', verifyToken, candidController.createCandidate);
 
 router.post('/update-candidate', verifyToken, candidController.updateCandidate);
 
+router.post('/admin-approval-for-candidate', verifyToken, candidController.updateCandidateAdminApprovalStatus);
+
+router.get('/all-admin-approved-candids', verifyToken, candidController.getAllAdminApprovedCandids);
+
 module.exports = router;

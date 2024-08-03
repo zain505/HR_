@@ -48,7 +48,7 @@ const createCandidate = async (req, res, next) => {
   const { full_name, father_name, department_name, designation, experience_in_years,
     candidate_photo, passport_img, idcard_img,
     licence_img, joining_date, annual_leaves,
-    casual_leaves, medical_leaves, contract_details,
+    casual_leaves, medical_leaves,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
     contract_start, contract_end,
@@ -87,13 +87,21 @@ const createCandidate = async (req, res, next) => {
       casual_leaves,
       annual_leaves,
       medical_leaves,
-      budget
+      budget,
+      creationDate: Date.now(),
+      lastModifyDate: Date.now(),
+      candidate_status: "Created",
+      candidate_process_step: 1
     })
 
     try {
+
       candidate.save()
+
     } catch (error) {
+
       console.log("something went wrong", error)
+
     }
 
     res.status(201).json({ candidate: candidate });
@@ -140,14 +148,14 @@ const updateCandidate = async (req, res, next) => {
       candidate_photo,
       is_candidate_on_reference,
       is_candidate_on_reference_name,
-      isEmployee,
       isContractedEmployee,
       contract_start,
       contract_end,
       casual_leaves,
       annual_leaves,
       medical_leaves,
-      budget
+      budget,
+      lastModifyDate: Date.now()
     }
 
 
@@ -162,6 +170,33 @@ const updateCandidate = async (req, res, next) => {
   }
 }
 
-exports.createCandidate = createCandidate
-exports.getAllRegisteredCandidates = getAllRegisteredCandidates
-exports.updateCandidate = updateCandidate
+const updateCandidateAdminApprovalStatus = async (req, res, next) => {
+
+  const { id, is_candidate_approved_by_admin_for_interview } = req.body;
+
+  let updatedBody = {
+    is_candidate_approved_by_admin_for_interview,
+    candidate_status: "Aprroved By Admin",
+    candidate_process_step: 1
+  }
+
+  await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
+
+  res.json({ message: "Candidate approved for interview by admin" });
+
+}
+
+const getAllAdminApprovedCandids = async (req, res, next) => {
+
+  const allAdminApprovedCandids =  await Candidate.find({}).where("is_candidate_approved_by_admin_for_interview")
+  .equals(true);
+
+  res.json(allAdminApprovedCandids);
+
+}
+
+exports.createCandidate = createCandidate;
+exports.getAllRegisteredCandidates = getAllRegisteredCandidates;
+exports.updateCandidate = updateCandidate;
+exports.updateCandidateAdminApprovalStatus = updateCandidateAdminApprovalStatus;
+exports.getAllAdminApprovedCandids = getAllAdminApprovedCandids;
