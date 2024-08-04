@@ -7,6 +7,7 @@ const cors = require('cors')
 const userRoutes = require('./routes/user')
 const candidateRoutes = require('./routes/candidate')
 const dashboardRoutes = require('./routes/dashboard')
+const employeeRoutes = require('./routes/employee')
 
 
 const app = express();
@@ -21,6 +22,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/candidate', candidateRoutes);
 
 app.use('/api/dashboard', dashboardRoutes);
+
+app.use('/api/employee', employeeRoutes);
 
 app.use('/', (req,res,next)=>{
   

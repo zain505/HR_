@@ -22,4 +22,14 @@ router.post('/delete-candidate', verifyToken, candidController.deleteCandidate);
 
 router.post('/upload-cv', verifyToken, candidController.uploadCVCandidate);
 
+router.post('/cv-mark-reviewed', verifyToken, candidController.markCVReviewed);
+
+router.post('/cv-result', verifyToken, candidController.updateCVResult);
+
+router.post('/schedule-interview', verifyToken, candidController.scheduleCandidateInterview);
+
+router.post('/marked-Interview',verifyToken, candidController.markedInterview),
+
+router.post('/update-Interview-status',verifyToken, candidController.updateInterviewStatus),
+
 module.exports = router;

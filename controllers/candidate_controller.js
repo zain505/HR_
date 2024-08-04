@@ -224,7 +224,7 @@ const uploadCVCandidate = async (req, res, next) => {
     candidate_process_step: 2
   }
 
-  let fetchTargetCandid = await Candidate.find(new mongoose.Types.ObjectId(id))
+  let fetchTargetCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id))
 
   if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
@@ -243,7 +243,148 @@ const uploadCVCandidate = async (req, res, next) => {
 
   }
 
+}
 
+const markCVReviewed = async (req, res, next) => {
+
+  const { id } = req.body;
+
+  let body;
+
+  body = {
+    candidate_status: "CV Reviewed",
+    candidate_process_step: 3
+  }
+
+  let fetchTargetCandid = await Candidate.findOne({ _id: new mongoose.Types.ObjectId(id) });
+
+  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+
+    res.json({ message: "Admin approval required" });
+
+  } else {
+    const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+
+    if (result == null) {
+      res.json({ message: "Id is not correct or id does not exist" });
+
+    } else {
+      res.json({ message: "cv marked reviewed " });
+
+    }
+
+  }
+
+}
+
+const updateCVResult = async (req, res, next) => {
+  const { id, candidate_status } = req.body;
+
+  let body;
+
+  if (candidate_status.toString().toUpperCase() == "ACCEPTED") {
+    body = {
+      candidate_status: "CV Accepted",
+      candidate_process_step: 4
+    }
+  } else if (candidate_status.toString().toUpperCase() == "REJECTED") {
+    body = {
+      candidate_status: "CV Rejected",
+      candidate_process_step: 3
+    }
+  }
+
+  let fetchTargetCandid = await Candidate.findOne({ _id: new mongoose.Types.ObjectId(id) })
+
+  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+
+    res.json({ message: "Admin approval required" });
+
+  } else {
+    const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+
+    if (result == null) {
+      res.json({ message: "Id is not correct or id does not exist" });
+
+    } else {
+      res.json({ message: `CV ${candidate_status}` });
+
+    }
+  }
+
+}
+
+const scheduleCandidateInterview = async (req, res, next) => {
+  const { id, interview_schedule_date, interview_schedule_time, interview_type } = req.body;
+
+  let body;
+
+  body = {
+    candidate_status: "Interview scheduled",
+    candidate_process_step: 5,
+    interview_schedule_date,
+    interview_schedule_time,
+    interview_type
+  }
+
+  const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+
+  if (result == null) {
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  } else {
+    res.json({ message: "interview scheduled" });
+
+  }
+
+}
+
+const markedInterview = async (req, res, next) => {
+  const { id } = req.body;
+
+  let body;
+
+  body = {
+    candidate_status: "Interview Done",
+    candidate_process_step: 6,
+  }
+
+  const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+  if (result == null) {
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  } else {
+    res.json({ message: "Interview Marked" });
+
+  }
+}
+
+const updateInterviewStatus = async (req, res, next) => {
+  const { id, is_candidate_interview_accept_reject } = req.body;
+
+  let body;
+
+  if (is_candidate_interview_accept_reject) {
+    body = {
+      candidate_status: "Candidate Passed",
+      candidate_process_step: 7,
+      is_candidate_interview_accept_reject
+    }
+  }else if(!is_candidate_interview_accept_reject){
+    body = {
+      candidate_status: "Candidate Rejected",
+      candidate_process_step: 6,
+      is_candidate_interview_accept_reject
+    }
+  }
+  const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+  if (result == null) {
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  } else {
+    res.json({ message: "RECRUITMENT PROCESS COMPLETED" });
+
+  }
 }
 
 exports.createCandidate = createCandidate;
@@ -252,4 +393,9 @@ exports.updateCandidate = updateCandidate;
 exports.updateCandidateAdminApprovalStatus = updateCandidateAdminApprovalStatus;
 exports.getAllAdminApprovedCandids = getAllAdminApprovedCandids;
 exports.deleteCandidate = deleteCandidate;
-exports.uploadCVCandidate = uploadCVCandidate
+exports.uploadCVCandidate = uploadCVCandidate;
+exports.markCVReviewed = markCVReviewed;
+exports.updateCVResult = updateCVResult;
+exports.scheduleCandidateInterview = scheduleCandidateInterview;
+exports.markedInterview = markedInterview;
+exports.updateInterviewStatus = updateInterviewStatus

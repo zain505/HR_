@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const CandidateSchema = new Schema({
+const EmployeeSchema = new Schema({
     full_name: { type: String, required: true },
     father_name: { type: String, required: true },
     department_name: { type: String, required: true },
     designation: { type: String, required: true },
     experience_in_years: { type: Number, required: true },
-    candidate_photo: { type: String, required: false },
+    employee_photo: { type: String, required: false },
     passport_img: { type: String, required: true },
     idcard_img: { type: String, required: true },
     licence_img: { type: String, required: true },
@@ -17,7 +17,7 @@ const CandidateSchema = new Schema({
     casual_leaves: { type: Number, required: false },
     medical_leaves: { type: Number, required: false },
     contract_details: { type: String, required: false },
-    is_candidate_on_reference: { type: Boolean, required: false },
+    is_employee_on_reference: { type: Boolean, required: false },
     reference_name: { type: String, required: false },
     budget: { type: Number, required: false },
     creationDate: { type: Date, required: false },
@@ -26,17 +26,8 @@ const CandidateSchema = new Schema({
     isContractedEmployee: { type: Boolean, required: false, default: false },
     contract_start: { type: String, required: false, default: false },
     contract_end: { type: String, required: false, default: false },
-    candidate_cv: { type: String, required: false },
-    is_candidate_approved_by_admin_for_interview: { type: Boolean, required: false, default: false },
-    candidate_status:{ type: String, required: false },
-    candidate_process_step:{ type: Number, required: false },
-    gross_salary:{ type: String, required: true },
-    interview_schedule_date:{ type: String, required: false,default:null },
-    interview_schedule_time:{ type: String, required: false,default:null },
-    interview_type:{ type: String, required: false,default:null },
-    is_candidate_interview_accept_reject : { type: Boolean, required: false,default:false }
-    
+    gross_salary: { type: String, required: true },
 })
 
-module.exports = mongoose.model('Candidate', CandidateSchema)
+module.exports = mongoose.model('Employee', EmployeeSchema)
 
