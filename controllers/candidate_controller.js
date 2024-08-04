@@ -215,9 +215,35 @@ const deleteCandidate = async (req,res,next) => {
 
 }
 
+const uploadCVCandidate = async (req,res,next) => {
+  const { id, candidate_cv } = req.body;
+
+  let body = {
+    candidate_cv,
+    candidate_status:"CV Under Review",
+    candidate_process_step:2
+  }
+
+  const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id),body);
+
+  if (result == null) {
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  } else {
+    res.json(
+      { message: "cv file uploaded",
+      canidate:result
+     }
+    );
+
+  }
+
+}
+
 exports.createCandidate = createCandidate;
 exports.getAllRegisteredCandidates = getAllRegisteredCandidates;
 exports.updateCandidate = updateCandidate;
 exports.updateCandidateAdminApprovalStatus = updateCandidateAdminApprovalStatus;
 exports.getAllAdminApprovedCandids = getAllAdminApprovedCandids;
 exports.deleteCandidate = deleteCandidate;
+exports.uploadCVCandidate = uploadCVCandidate

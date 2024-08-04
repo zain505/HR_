@@ -18,6 +18,8 @@ router.post('/admin-approval-for-candidate', verifyToken, candidController.updat
 
 router.get('/all-admin-approved-candids', verifyToken, candidController.getAllAdminApprovedCandids);
 
-router.get('/delete-candidate', verifyToken, candidController.deleteCandidate);
+router.post('/delete-candidate', verifyToken, candidController.deleteCandidate);
+
+router.post('/upload-cv', verifyToken, candidController.deleteCandidate);
 
 module.exports = router;
