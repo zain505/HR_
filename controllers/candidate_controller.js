@@ -51,7 +51,7 @@ const createCandidate = async (req, res, next) => {
     casual_leaves, medical_leaves,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
-    contract_start, contract_end,gross_salary,
+    contract_start, contract_end, gross_salary,
     budget }
     =
     req.body;
@@ -92,7 +92,7 @@ const createCandidate = async (req, res, next) => {
       lastModifyDate: Date.now(),
       candidate_status: "Created",
       candidate_process_step: 1,
-      gross_salary
+      gross_salary,
     })
 
     try {
@@ -117,7 +117,7 @@ const updateCandidate = async (req, res, next) => {
     casual_leaves, medical_leaves, contract_details,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
-    contract_start, contract_end,gross_salary,
+    contract_start, contract_end, gross_salary,
     budget
   }
     =
@@ -197,7 +197,7 @@ const getAllAdminApprovedCandids = async (req, res, next) => {
 
 }
 
-const deleteCandidate = async (req,res,next) => {
+const deleteCandidate = async (req, res, next) => {
   const { id } = req.body;
 
   const result = await Candidate.findByIdAndDelete(new mongoose.Types.ObjectId(id));
@@ -215,28 +215,34 @@ const deleteCandidate = async (req,res,next) => {
 
 }
 
-const uploadCVCandidate = async (req,res,next) => {
+const uploadCVCandidate = async (req, res, next) => {
   const { id, candidate_cv } = req.body;
 
   let body = {
     candidate_cv,
-    candidate_status:"CV Under Review",
-    candidate_process_step:2
+    candidate_status: "CV Under Review",
+    candidate_process_step: 2
   }
 
-  const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id),body);
+  let fetchTargetCandid = await Candidate.find(new mongoose.Types.ObjectId(id))
 
-  if (result == null) {
-    res.json({ message: "Id is not correct or id does not exist" });
+  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+
+    res.json({ message: "Admin approval required" });
 
   } else {
-    res.json(
-      { message: "cv file uploaded",
-      canidate:result
-     }
-    );
+    const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
+
+    if (result == null) {
+      res.json({ message: "Id is not correct or id does not exist" });
+
+    } else {
+      res.json({ message: "cv file uploaded" });
+
+    }
 
   }
+
 
 }
 
