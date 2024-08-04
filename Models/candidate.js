@@ -29,7 +29,8 @@ const CandidateSchema = new Schema({
     candidate_cv: { type: String, required: false },
     is_candidate_approved_by_admin_for_interview: { type: Boolean, required: false, default: false },
     candidate_status:{ type: String, required: false },
-    candidate_process_step:{ type: Number, required: false }
+    candidate_process_step:{ type: Number, required: false },
+    gross_salary:{ type: String, required: true }
     
 })
 

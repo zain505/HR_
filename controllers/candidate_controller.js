@@ -51,7 +51,7 @@ const createCandidate = async (req, res, next) => {
     casual_leaves, medical_leaves,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
-    contract_start, contract_end,
+    contract_start, contract_end,gross_salary,
     budget }
     =
     req.body;
@@ -61,7 +61,7 @@ const createCandidate = async (req, res, next) => {
     !passport_img || !designation || !experience_in_years ||
     !candidate_photo ||
     !casual_leaves ||
-    !annual_leaves || !medical_leaves || !budget) {
+    !annual_leaves || !medical_leaves || !budget || !gross_salary) {
     res.status(400).json({ message: "some fields are missing" });
 
   } else if (isContractedEmployee && !contract_start && !contract_end) {
@@ -91,7 +91,8 @@ const createCandidate = async (req, res, next) => {
       creationDate: Date.now(),
       lastModifyDate: Date.now(),
       candidate_status: "Created",
-      candidate_process_step: 1
+      candidate_process_step: 1,
+      gross_salary
     })
 
     try {
@@ -116,7 +117,7 @@ const updateCandidate = async (req, res, next) => {
     casual_leaves, medical_leaves, contract_details,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
-    contract_start, contract_end,
+    contract_start, contract_end,gross_salary,
     budget
   }
     =
@@ -125,7 +126,7 @@ const updateCandidate = async (req, res, next) => {
   if (!full_name || !father_name || !department_name ||
     !joining_date || !licence_img || !idcard_img ||
     !passport_img || !designation || !experience_in_years ||
-    !candidate_photo ||
+    !candidate_photo || !gross_salary ||
     !casual_leaves || !annual_leaves || !medical_leaves || !contract_details || !budget) {
 
     res.status(400).json({ message: "some fields are missing" });
@@ -155,7 +156,8 @@ const updateCandidate = async (req, res, next) => {
       annual_leaves,
       medical_leaves,
       budget,
-      lastModifyDate: Date.now()
+      lastModifyDate: Date.now(),
+      gross_salary
     }
 
 
@@ -188,10 +190,28 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
 
 const getAllAdminApprovedCandids = async (req, res, next) => {
 
-  const allAdminApprovedCandids =  await Candidate.find({}).where("is_candidate_approved_by_admin_for_interview")
-  .equals(true);
+  const allAdminApprovedCandids = await Candidate.find({}).where("is_candidate_approved_by_admin_for_interview")
+    .equals(true);
 
   res.json(allAdminApprovedCandids);
+
+}
+
+const deleteCandidate = async (req,res,next) => {
+  const { id } = req.body;
+
+  const result = await Candidate.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+
+  if (result == null) {
+    res.json({ message: "Id is not correct or id does not exist" });
+
+  } else {
+    res.json({ message: "1 record deleted" });
+
+  }
+
+
+
 
 }
 
@@ -200,3 +220,4 @@ exports.getAllRegisteredCandidates = getAllRegisteredCandidates;
 exports.updateCandidate = updateCandidate;
 exports.updateCandidateAdminApprovalStatus = updateCandidateAdminApprovalStatus;
 exports.getAllAdminApprovedCandids = getAllAdminApprovedCandids;
+exports.deleteCandidate = deleteCandidate;

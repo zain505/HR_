@@ -31,7 +31,7 @@ const getUsers = async (req, res, next) => {
 
     const regex = new RegExp(searchStr, 'i');
 
-    getSignedUpAllUsers = await Candidate.find({ full_name: { $regex: regex } });
+    getSignedUpAllUsers = await User.find({ name: { $regex: regex } });
   }
 
 
