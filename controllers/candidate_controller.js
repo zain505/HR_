@@ -218,15 +218,27 @@ const deleteCandidate = async (req, res, next) => {
 const uploadCVCandidate = async (req, res, next) => {
   const { id, candidate_cv } = req.body;
 
+  if (!candidate_cv || !candidate_cv.file_base64str || !candidate_cv.file_name) {
+    res.json({ message: "some fields are missing" })
+    return;
+  }
+
   let body = {
-    candidate_cv,
+    candidate_cv: {
+      file_base64str: candidate_cv.file_base64str,
+      file_name: candidate_cv.file_name
+    },
     candidate_status: "CV Under Review",
     candidate_process_step: 2
   }
 
-  let fetchTargetCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id))
+  let fetchTargetCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id));
 
-  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+  if (!fetchTargetCandid) {
+
+    res.json({ message: "Target Candidate not found" });
+
+  } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
     res.json({ message: "Admin approval required" });
 
@@ -258,7 +270,11 @@ const markCVReviewed = async (req, res, next) => {
 
   let fetchTargetCandid = await Candidate.findOne({ _id: new mongoose.Types.ObjectId(id) });
 
-  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+  if (!fetchTargetCandid) {
+
+    res.json({ message: "Target Candidate not found" });
+
+  } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
     res.json({ message: "Admin approval required" });
 
@@ -296,7 +312,11 @@ const updateCVResult = async (req, res, next) => {
 
   let fetchTargetCandid = await Candidate.findOne({ _id: new mongoose.Types.ObjectId(id) })
 
-  if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
+  if (!fetchTargetCandid) {
+
+    res.json({ message: "Target Candidate not found" });
+
+  } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
     res.json({ message: "Admin approval required" });
 
@@ -370,7 +390,7 @@ const updateInterviewStatus = async (req, res, next) => {
       candidate_process_step: 7,
       is_candidate_interview_accept_reject
     }
-  }else if(!is_candidate_interview_accept_reject){
+  } else if (!is_candidate_interview_accept_reject) {
     body = {
       candidate_status: "Candidate Rejected",
       candidate_process_step: 6,
