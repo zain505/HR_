@@ -184,7 +184,7 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
       let updatedBody = {
         is_candidate_approved_by_admin_for_interview,
         candidate_status: "Aprroved By Admin",
-        candidate_process_step: 1
+        candidate_process_step: 0
       }
 
       await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
@@ -193,8 +193,8 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
     } else {
       let updatedBody = {
         is_candidate_approved_by_admin_for_interview,
-        candidate_status: "Aprroved By Admin",
-        candidate_process_step: 1
+        candidate_status: "",
+        candidate_process_step: 0
       }
 
       await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
