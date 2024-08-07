@@ -92,7 +92,7 @@ const createCandidate = async (req, res, next) => {
       creationDate: Date.now(),
       lastModifyDate: Date.now(),
       candidate_status: "Created",
-      candidate_process_step: 1,
+      candidate_process_step: 0,
       gross_salary,
     })
 
@@ -177,15 +177,37 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
 
   const { id, is_candidate_approved_by_admin_for_interview } = req.body;
 
-  let updatedBody = {
-    is_candidate_approved_by_admin_for_interview,
-    candidate_status: "Aprroved By Admin",
-    candidate_process_step: 1
+  const targetCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id));
+
+  if (targetCandid) {
+    if (is_candidate_approved_by_admin_for_interview) {
+      let updatedBody = {
+        is_candidate_approved_by_admin_for_interview,
+        candidate_status: "Aprroved By Admin",
+        candidate_process_step: 1
+      }
+
+      await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
+
+      res.json({ message: "Candidate approved for interview by admin" });
+    } else {
+      let updatedBody = {
+        is_candidate_approved_by_admin_for_interview,
+        candidate_status: "Aprroved By Admin",
+        candidate_process_step: 1
+      }
+
+      await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
+
+      res.json({ message: "Candidate is not approved for interview by admin" });
+    }
+  } else {
+    res.json({ message: "id is not correct" });
   }
 
-  await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
 
-  res.json({ message: "Candidate approved for interview by admin" });
+
+
 
 }
 
@@ -230,7 +252,7 @@ const uploadCVCandidate = async (req, res, next) => {
       file_name: candidate_cv.file_name
     },
     candidate_status: "CV Under Review",
-    candidate_process_step: 2
+    candidate_process_step: 1
   }
 
   let fetchTargetCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id));
@@ -266,7 +288,7 @@ const markCVReviewed = async (req, res, next) => {
 
   body = {
     candidate_status: "CV Reviewed",
-    candidate_process_step: 3
+    candidate_process_step: 2
   }
 
   let fetchTargetCandid = await Candidate.findOne({ _id: new mongoose.Types.ObjectId(id) });
@@ -302,12 +324,13 @@ const updateCVResult = async (req, res, next) => {
   if (candidate_status.toString().toUpperCase() == "ACCEPTED") {
     body = {
       candidate_status: "CV Accepted",
-      candidate_process_step: 4
+      candidate_process_step: 3
     }
   } else if (candidate_status.toString().toUpperCase() == "REJECTED") {
     body = {
       candidate_status: "CV Rejected",
-      candidate_process_step: 1
+      candidate_process_step: 0,
+
     }
   }
 
@@ -342,7 +365,7 @@ const scheduleCandidateInterview = async (req, res, next) => {
 
   body = {
     candidate_status: "Interview scheduled",
-    candidate_process_step: 5,
+    candidate_process_step: 4,
     interview_schedule_date,
     interview_schedule_time,
     interview_type
@@ -361,25 +384,25 @@ const scheduleCandidateInterview = async (req, res, next) => {
 }
 
 const markedInterview = async (req, res, next) => {
-  const { id,is_candidate_attend_interview } = req.body;
+  const { id, is_candidate_attend_interview } = req.body;
 
   let body;
 
-  if(is_candidate_attend_interview){
+  if (is_candidate_attend_interview) {
     body = {
       candidate_status: "Interview Done",
-      candidate_process_step: 6,
+      candidate_process_step: 5,
       is_candidate_attend_interview
     }
-  }else{
+  } else {
     body = {
       candidate_status: "Candidate Not Appeared",
-      candidate_process_step: 5,
+      candidate_process_step: 4,
       is_candidate_attend_interview
     }
   }
 
-  
+
 
   const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
   if (result == null) {
@@ -399,13 +422,13 @@ const updateInterviewStatus = async (req, res, next) => {
   if (is_candidate_interview_accept_reject) {
     body = {
       candidate_status: "Candidate Passed",
-      candidate_process_step: 7,
+      candidate_process_step: 6,
       is_candidate_interview_accept_reject
     }
   } else if (!is_candidate_interview_accept_reject) {
     body = {
       candidate_status: "Candidate Rejected",
-      candidate_process_step: 6,
+      candidate_process_step: 5,
       is_candidate_interview_accept_reject
     }
   }
@@ -419,17 +442,17 @@ const updateInterviewStatus = async (req, res, next) => {
   }
 }
 
-const getSingleCandidateById = async (req,res,next) =>{
+const getSingleCandidateById = async (req, res, next) => {
   const id = req.params.id;
 
-  if(!id){
-    res.json({message:"id is not correct"})
+  if (!id) {
+    res.json({ message: "id is not correct" })
   } else {
     const result = await candidate.findOne(new mongoose.Types.ObjectId(id));
 
-    if(!result){
-      res.json({message:"No Candidate for given id"})
-    }else{
+    if (!result) {
+      res.json({ message: "No Candidate for given id" })
+    } else {
       res.json(result)
     }
   }
