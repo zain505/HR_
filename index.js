@@ -8,6 +8,7 @@ const userRoutes = require('./routes/user')
 const candidateRoutes = require('./routes/candidate')
 const dashboardRoutes = require('./routes/dashboard')
 const employeeRoutes = require('./routes/employee')
+const offerletterRoutes = require('./routes/offerLetter')
 
 
 const app = express();
@@ -25,7 +26,11 @@ app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/api/employee', employeeRoutes);
 
-app.use('/', (req,res,next)=>{
+app.use('/api/employee', employeeRoutes);
+
+app.use('/api/offerLetter',offerletterRoutes)
+
+app.use('/', (req,res,next)=>{ 
   
   res.json({message:"server is listning  at 5000"});
 });

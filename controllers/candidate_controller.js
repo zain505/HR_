@@ -6,6 +6,7 @@ const { validationResult } = require('express-validator');
 const Candidate = require('../Models/candidate');
 
 const mongoose = require('mongoose');
+const candidate = require('../Models/candidate');
 
 const getAllRegisteredCandidates = async (req, res, next) => {
 
@@ -306,7 +307,7 @@ const updateCVResult = async (req, res, next) => {
   } else if (candidate_status.toString().toUpperCase() == "REJECTED") {
     body = {
       candidate_status: "CV Rejected",
-      candidate_process_step: 3
+      candidate_process_step: 1
     }
   }
 
@@ -360,14 +361,25 @@ const scheduleCandidateInterview = async (req, res, next) => {
 }
 
 const markedInterview = async (req, res, next) => {
-  const { id } = req.body;
+  const { id,is_candidate_attend_interview } = req.body;
 
   let body;
 
-  body = {
-    candidate_status: "Interview Done",
-    candidate_process_step: 6,
+  if(is_candidate_attend_interview){
+    body = {
+      candidate_status: "Interview Done",
+      candidate_process_step: 6,
+      is_candidate_attend_interview
+    }
+  }else{
+    body = {
+      candidate_status: "Candidate Not Appeared",
+      candidate_process_step: 5,
+      is_candidate_attend_interview
+    }
   }
+
+  
 
   const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
   if (result == null) {
@@ -407,6 +419,22 @@ const updateInterviewStatus = async (req, res, next) => {
   }
 }
 
+const getSingleCandidateById = async (req,res,next) =>{
+  const id = req.params.id;
+
+  if(!id){
+    res.json({message:"id is not correct"})
+  } else {
+    const result = await candidate.findOne(new mongoose.Types.ObjectId(id));
+
+    if(!result){
+      res.json({message:"No Candidate for given id"})
+    }else{
+      res.json(result)
+    }
+  }
+}
+
 exports.createCandidate = createCandidate;
 exports.getAllRegisteredCandidates = getAllRegisteredCandidates;
 exports.updateCandidate = updateCandidate;
@@ -419,3 +447,4 @@ exports.updateCVResult = updateCVResult;
 exports.scheduleCandidateInterview = scheduleCandidateInterview;
 exports.markedInterview = markedInterview;
 exports.updateInterviewStatus = updateInterviewStatus
+exports.getSingleCandidateById = getSingleCandidateById

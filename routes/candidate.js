@@ -32,4 +32,6 @@ router.post('/marked-Interview',verifyToken, candidController.markedInterview),
 
 router.post('/update-Interview-status',verifyToken, candidController.updateInterviewStatus),
 
+router.get('/get-candidate-by-id=:id',verifyToken, candidController.getSingleCandidateById),
+
 module.exports = router;
