@@ -10,4 +10,8 @@ const router = express.Router();
 
 router.post('/send-offer-letter', verifyToken, offerletterController.createOfferLetter);
 
+router.post('/revise-offer-letter', verifyToken, offerletterController.reviseOfferLetter);
+
+router.get('/get-all-interview-candids', verifyToken, offerletterController.getAllBenefitedCandids);
+
 module.exports = router;

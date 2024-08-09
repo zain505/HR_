@@ -17,10 +17,10 @@ const OfferLetterSchema = new Schema({
     travelling_allowance:{type:String,default:null,required:false},
     contract_period:{type:String,default:null,required:false},
     ticket_allowance:{type:String,default:null,required:false},
-    allowance_for:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Candidate"
-    }
+    is_offer_letter_submit:{type:Boolean,default:false,required:false},
+    is_offer_letter_revise:{type:Boolean,default:false,required:false},
+    offer_letter_status:{type:String,default:"New",required:false},
+    allowance_for:{type: mongoose.Schema.Types.ObjectId,ref: 'Candidate'}
 })
 
 module.exports = mongoose.model('OfferLetter', OfferLetterSchema)

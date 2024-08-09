@@ -330,7 +330,7 @@ const updateCVResult = async (req, res, next) => {
     body = {
       candidate_status: "CV Rejected",
       candidate_process_step: 0,
-
+      candidate_cv:""
     }
   }
 
