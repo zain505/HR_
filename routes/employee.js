@@ -8,6 +8,8 @@ const verifyToken = require('../authMiddleWare/authMiddleWare');
 
 const router = express.Router();
 
-router.get('/make-employee', verifyToken, employeeController.createEmployeeFromCandid);
+router.post('/create-employee', verifyToken, employeeController.createEmployeeFromCandid);
+
+router.post('/update-employee', verifyToken, employeeController.updateEmployee);
 
 module.exports = router;

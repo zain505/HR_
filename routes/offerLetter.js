@@ -16,4 +16,8 @@ router.post('/revise-offer-letter', verifyToken, offerletterController.reviseOff
 
 router.get('/get-all-interview-candids', verifyToken, offerletterController.getAllBenefitedCandids);
 
+router.get('/delete-benefited-candidate&:benifit_id=:id', verifyToken, offerletterController.deletebenifitForCanid);
+
+
+
 module.exports = router;

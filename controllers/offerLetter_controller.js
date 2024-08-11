@@ -14,44 +14,51 @@ const mongoose = require('mongoose');
 
 const createOfferLetter = async (req, res, next) => {
     const {
-        basic_salary, food_allowance, transportation_allowance, accommodation_allowance,
+        id, basic_salary, food_allowance, transportation_allowance, accommodation_allowance,
         room_type, telephone_allowance, extra_hour_allowance, laundary_allowance, bonus,
         special_allowance, performance_allowance, travelling_allowance, contract_period,
         ticket_allowance, allowance_for,
     } = req.body;
 
-    if (!allowance_for) {
-        res.json({ message: "Candidate id is missing" });
+    if (!allowance_for || !id) {
+        res.json({ message: "Candidate id is missing or benfit id" });
     } else {
-        const newOfferLetter = new OfferLetter({
+        const newOfferLetter = {
             basic_salary,
             food_allowance,
             transportation_allowance,
-            accommodation_allowance,
-            room_type,
-            telephone_allowance,
-            extra_hour_allowance,
-            laundary_allowance,
+             accommodation_allowance,
+            room_type, 
+            telephone_allowance, 
+            extra_hour_allowance, 
+            laundary_allowance, 
             bonus,
-            special_allowance,
-            performance_allowance,
-            travelling_allowance,
+            special_allowance, 
+            performance_allowance, 
+            travelling_allowance, 
             contract_period,
-            ticket_allowance,
+            ticket_allowance, 
             allowance_for,
-            is_offer_letter_submit: true,
-            offer_letter_status: "Pending",
-            is_offer_letter_revise: false
-        })
+            offer_letter_status:"Pending",
+            is_offer_letter_submit:true,
+            is_offer_letter_revise:false
+        }
 
         try {
 
-            await newOfferLetter.save().then((doc) => {
+            const result = await OfferLetter.findByIdAndUpdate(new mongoose.Types.ObjectId(id), newOfferLetter);
 
-                Email.sendEmail(doc._doc, 2);
+            if (result) {
+                
+                Email.sendEmail(newOfferLetter, 2);
                 res.status(201).json({ offerletter: newOfferLetter });
+            }else{
+                res.status(400).json({ message: "offer letter not saved" });  
+            }
 
-            }).catch(error => console.log(error));
+            // await newOfferLetter.save().then((doc) => {
+
+            // }).catch(error => console.log(error));
 
         } catch (error) {
 
@@ -168,7 +175,23 @@ const createOfferLetterTemplateForInterviewPassedCandid = async (req, res, next)
     }
 }
 
+const deletebenifitForCanid = async (req, res, next) => {
+    const id = req.params.id;
+
+    if (!id) {
+        res.json({ message: "id is not correct" });
+    } else {
+        const result = await OfferLetter.findByIdAndDelete(new mongoose.Types.ObjectId(id))
+        if (result) {
+            res.json({ message: "Benefit Deleted" });
+        } else {
+            res.json({ message: "No Benefit Found against given id" });
+        }
+    }
+}
+
 exports.createOfferLetter = createOfferLetter;
 exports.createOfferLetterTemplateForInterviewPassedCandid = createOfferLetterTemplateForInterviewPassedCandid;
 exports.getAllBenefitedCandids = getAllBenefitedCandids
-exports.reviseOfferLetter = reviseOfferLetter
+exports.reviseOfferLetter = reviseOfferLetter;
+exports.deletebenifitForCanid = deletebenifitForCanid

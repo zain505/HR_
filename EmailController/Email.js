@@ -62,18 +62,18 @@ const renderHTMLTemplate = async (item, templateType) => {
             }
         }
 
-        templateStr = `<h3>Dear ${target.full_name},</h3>
+        templateStr = `<h3>Dear ${target?.full_name},</h3>
     <p style="padding-left:50px; font-size:1rem">
-    We are pleased to offer you a job as a ${target.designation} at our CompanyName. We think that your experience and skills will be a valuable asset to our company.If you are to accept this offer you will be eligible to the following in accordance to our company’s policies:
+    We are pleased to offer you a job as a <b style="text-transform:uppercase;"> ${target?.designation}</b> at our CompanyName. We think that your experience and skills will be a valuable asset to our company.If you are to accept this offer you will be eligible to the following in accordance to our company’s policies:
     </p>
     <ul style="padding-left:150px font-size:1rem">
-      ${makeListOfOffers.map(list=>{
+      ${makeListOfOffers?.map(list=>{
         return(
-            `<li>${list.key}: ${list.value}</li>`
+            `<li style="text-transform:uppercase;"><b>${list?.key}: ${list?.value}</b></li>`
         )
       })}
     </ul>
-    <p style="font-size:1rem">Your expected joining date will be the ${target.joining_date}.</p>
+    <p style="font-size:1rem">Your expected joining date will be the ${target?.joining_date}.</p>
     <p style="font-size:1rem">To accept this offer, sign and date this letter as indicated below and email it back to us by within 2 days.
 
 We look forward to welcoming you to our team. Feel free to call if you have any questions or concerns.

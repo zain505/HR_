@@ -214,8 +214,7 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
 
 const getAllAdminApprovedCandids = async (req, res, next) => {
 
-  const allAdminApprovedCandids = await Candidate.find({}).where("is_candidate_approved_by_admin_for_interview")
-    .equals(true);
+  const allAdminApprovedCandids = await Candidate.find({}).and([{ is_candidate_interview_accept_reject: false }, { is_candidate_approved_by_admin_for_interview: true }]);
 
   res.json(allAdminApprovedCandids);
 
