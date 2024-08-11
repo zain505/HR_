@@ -35,8 +35,7 @@ const CandidateSchema = new Schema({
     interview_schedule_time:{ type: String, required: false,default:null },
     interview_type:{ type: String, required: false,default:null },
     is_candidate_attend_interview:{ type: Boolean, required: false,default:false },
-    is_candidate_interview_accept_reject : { type: Boolean, required: false,default:false }
-    
+    is_candidate_interview_accept_reject : { type: Boolean, required: false,default:false },
 })
 
 module.exports = mongoose.model('Candidate', CandidateSchema)

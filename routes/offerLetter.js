@@ -10,6 +10,8 @@ const router = express.Router();
 
 router.post('/send-offer-letter', verifyToken, offerletterController.createOfferLetter);
 
+router.post('/create-template-offer-letter&:candid-id=:id', verifyToken, offerletterController.createOfferLetterTemplateForInterviewPassedCandid);
+
 router.post('/revise-offer-letter', verifyToken, offerletterController.reviseOfferLetter);
 
 router.get('/get-all-interview-candids', verifyToken, offerletterController.getAllBenefitedCandids);

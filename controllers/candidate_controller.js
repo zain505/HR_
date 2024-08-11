@@ -7,6 +7,7 @@ const Candidate = require('../Models/candidate');
 
 const mongoose = require('mongoose');
 const candidate = require('../Models/candidate');
+const offerletter = require('../Models/offerletter');
 
 const getAllRegisteredCandidates = async (req, res, next) => {
 
@@ -330,7 +331,7 @@ const updateCVResult = async (req, res, next) => {
     body = {
       candidate_status: "CV Rejected",
       candidate_process_step: 0,
-      candidate_cv:""
+      candidate_cv: ""
     }
   }
 
@@ -438,7 +439,6 @@ const updateInterviewStatus = async (req, res, next) => {
 
   } else {
     res.json({ message: "RECRUITMENT PROCESS COMPLETED" });
-
   }
 }
 
