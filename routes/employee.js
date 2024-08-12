@@ -12,4 +12,6 @@ router.post('/create-employee', verifyToken, employeeController.createEmployeeFr
 
 router.post('/update-employee', verifyToken, employeeController.updateEmployee);
 
+router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToken, employeeController.getAllEmployeesData);
+
 module.exports = router;

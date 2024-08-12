@@ -2,12 +2,11 @@
 const { validationResult } = require('express-validator');
 
 // const HttpError = require('../models/http-error');
-
-const Candidate = require('../Models/candidate');
-const Employee = require('../Models/employee');
-
 const mongoose = require('mongoose');
 
+const Candidate = require('../Models/candidate');
+
+const Employee = require('../Models/employee');
 
 const createEmployeeFromCandid = async (req, res, next) => {
   const { cadid_id, benifit_id } = req.body;
@@ -74,7 +73,7 @@ const createEmployeeFromCandid = async (req, res, next) => {
   }
 }
 
-const updateEmployee = async (res, req, next) => {
+const updateEmployee = async (req, res, next) => {
 
   const {
     id, full_name, father_name, department_name, designation, experience_in_years,
@@ -123,7 +122,45 @@ const updateEmployee = async (res, req, next) => {
   }
 }
 
+const getAllEmployeesData = async (req, res, next) => {
+
+  const pageId = Number(req?.params?.pageid);
+
+  const pagesize = Number(req?.params?.pagesize);
+
+  const searchStr = req?.params?.searchstr;
+
+  let tempAllEmployees = [];
+
+  if (searchStr == -1) {
+
+    tempAllEmployees = await Employee.find({}).where("isEmployee").equals(true);
+
+  } else if (searchStr != -1 && typeof (searchStr) != Number) {
+
+    const regex = new RegExp(searchStr, 'i');
+
+    tempAllEmployees = await Employee.find({ full_name: { $regex: regex } }).where("isEmployee").equals(true);
+  }
+
+
+  if ((tempAllEmployees.length >= pagesize) && (page >= 1)) {
+
+    let sliceData = tempAllEmployees.slice(pagesize * (page - 1), pagesize * page);
+
+    res.json(sliceData);
+
+  } else {
+
+    res.json(tempAllEmployees)
+
+  }
+  
+}
+
 exports.createEmployeeFromCandid = createEmployeeFromCandid;
 
 exports.updateEmployee = updateEmployee;
+
+exports.getAllEmployeesData = getAllEmployeesData;
 

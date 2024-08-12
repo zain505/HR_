@@ -26,8 +26,6 @@ app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/api/employee', employeeRoutes);
 
-app.use('/api/employee', employeeRoutes);
-
 app.use('/api/offerLetter',offerletterRoutes)
 
 app.use('/', (req,res,next)=>{ 
