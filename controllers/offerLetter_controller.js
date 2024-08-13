@@ -20,6 +20,8 @@ const createOfferLetter = async (req, res, next) => {
         ticket_allowance, allowance_for,
     } = req.body;
 
+    const findEmailCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id));
+
     if (!allowance_for || !id) {
         res.json({ message: "Candidate id is missing or benfit id" });
     } else {
@@ -49,16 +51,17 @@ const createOfferLetter = async (req, res, next) => {
             const result = await OfferLetter.findByIdAndUpdate(new mongoose.Types.ObjectId(id), newOfferLetter);
 
             if (result) {
+                if(findEmailCandid){
+                    Email.sendEmail(newOfferLetter,findEmailCandid.email, 2);
+                    res.status(201).json({ offerletter: newOfferLetter,message:"Offer Letter Created and email sent" });
+                }else{
+                    res.json({message:"Offer Letter Created but email not sent for some unkknow reasons"})
+                }
                 
-                Email.sendEmail(newOfferLetter, 2);
-                res.status(201).json({ offerletter: newOfferLetter });
+                
             }else{
                 res.status(400).json({ message: "offer letter not saved" });  
             }
-
-            // await newOfferLetter.save().then((doc) => {
-
-            // }).catch(error => console.log(error));
 
         } catch (error) {
 

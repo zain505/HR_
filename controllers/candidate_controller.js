@@ -47,9 +47,9 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
 const createCandidate = async (req, res, next) => {
 
-  const { full_name, father_name, department_name, designation, experience_in_years,
+  const { full_name, father_name, email, contact_1, contact_2, address, department_name, designation, experience_in_years,
     candidate_photo, passport_img, idcard_img,
-    licence_img, joining_date, annual_leaves,
+    licence_img, joining_date, annual_leaves, 
     casual_leaves, medical_leaves,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
@@ -63,7 +63,8 @@ const createCandidate = async (req, res, next) => {
     !passport_img || !designation || !experience_in_years ||
     !candidate_photo ||
     !casual_leaves ||
-    !annual_leaves || !medical_leaves || !budget || !gross_salary) {
+    !annual_leaves || !medical_leaves || !budget || !gross_salary ||  !email,
+    !contact_1 || !contact_2 || !address) {
     res.status(400).json({ message: "some fields are missing" });
 
   } else if (isContractedEmployee && !contract_start && !contract_end) {
@@ -72,6 +73,10 @@ const createCandidate = async (req, res, next) => {
     const candidate = new Candidate({
       full_name,
       father_name,
+      email,
+      contact_1,
+      contact_2,
+      address,
       department_name,
       joining_date,
       licence_img,

@@ -18,10 +18,11 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendEmail = async (item, templateType) => {
+const sendEmail = async (item, canidiEmail, templateType) => {
     const info = await transporter.sendMail({
         from: `${senderName} <${senderEmail}>`, // sender address
         to: receiverEmail, // list of receivers
+        // to: canidiEmail, // list of receivers
         subject: renderEmailSubject(templateType), // Subject line
         // text: "Hello world?", // plain text body
         html: await renderHTMLTemplate(item, templateType), // html body
