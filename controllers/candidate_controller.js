@@ -19,6 +19,8 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
   let tempAllCandids = [];
 
+  const totalCandids = await Candidate.find({}).countDocuments()
+
   if (searchStr == -1) {
 
     tempAllCandids = await Candidate.find({});
@@ -35,11 +37,11 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
     let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
 
-    res.json(sliceData);
+    res.json({ total: totalCandids, data: sliceData });
 
   } else {
 
-    res.json(tempAllCandids)
+    res.json({ total: totalCandids, data: tempAllCandids })
 
   }
 
@@ -49,7 +51,7 @@ const createCandidate = async (req, res, next) => {
 
   const { full_name, father_name, email, contact_1, contact_2, address, department_name, designation, experience_in_years,
     candidate_photo, passport_img, idcard_img,
-    licence_img, joining_date, annual_leaves, 
+    licence_img, joining_date, annual_leaves,
     casual_leaves, medical_leaves,
     is_candidate_on_reference, is_candidate_on_reference_name,
     isEmployee, isContractedEmployee,
@@ -63,7 +65,7 @@ const createCandidate = async (req, res, next) => {
     !passport_img || !designation || !experience_in_years ||
     !candidate_photo ||
     !casual_leaves ||
-    !annual_leaves || !medical_leaves || !budget || !gross_salary ||  !email,
+    !annual_leaves || !medical_leaves || !budget || !gross_salary || !email,
     !contact_1 || !contact_2 || !address) {
     res.status(400).json({ message: "some fields are missing" });
 
