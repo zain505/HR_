@@ -84,7 +84,7 @@ const createEmployeeFromCandid = async (req, res, next) => {
 
 const updateEmployee = async (req, res, next) => {
 
-  const { 
+  const {
     id, full_name, email, contact_1, contact_2, address, father_name, department_name, designation, experience_in_years,
     employee_photo, passport_img, idcard_img, licence_img, joining_date, annual_leaves, casual_leaves,
     medical_leaves, contract_details, is_employee_on_reference, reference_name,
@@ -145,6 +145,8 @@ const getAllEmployeesData = async (req, res, next) => {
 
   let tempAllEmployees = [];
 
+  const total = await Employee.find({}).where("isEmployee").equals(true).countDocuments();
+
   if (searchStr == -1) {
 
     tempAllEmployees = await Employee.find({}).where("isEmployee").equals(true);
@@ -161,11 +163,11 @@ const getAllEmployeesData = async (req, res, next) => {
 
     let sliceData = tempAllEmployees.slice(pagesize * (page - 1), pagesize * page);
 
-    res.json(sliceData);
+    res.json({ total: total, data: sliceData });
 
   } else {
 
-    res.json(tempAllEmployees)
+    res.json({ total: total, data: tempAllEmployees })
 
   }
 
