@@ -9,6 +9,7 @@ const candidateRoutes = require('./routes/candidate')
 const dashboardRoutes = require('./routes/dashboard')
 const employeeRoutes = require('./routes/employee')
 const offerletterRoutes = require('./routes/offerLetter')
+const preArrivalRoutes = require('./routes/preArrivalChecks')
 
 
 const app = express();
@@ -27,6 +28,8 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/employee', employeeRoutes);
 
 app.use('/api/offerLetter',offerletterRoutes)
+
+app.use('/api/preArrival',preArrivalRoutes)
 
 app.use('/', (req,res,next)=>{ 
   
