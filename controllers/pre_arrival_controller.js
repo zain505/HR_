@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 const Email = require('../EmailController/Email')
 
-const PreArrivalCheckList = require("../Models/prearrivalchecklist")
+const PreArrivalCheckList = require("../Models/prearrivalchecklist");
+
+const OfferLetter = require("../Models/offerletter");
 
 const Candidate = require("../Models/candidate");
 
@@ -18,14 +20,16 @@ const createTemplatePreArrival = async (req, res, next) => {
 
     } else {
         let body = {
-            is_candidate_accept_offer: true
+            is_candidate_accept_offer: true,
+             candidate_status:"Offer Letter Accepted"
         }
-
         let result = await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(candidate_id), body);
-
-        if (!result) {
+        const findCandidate = await Candidate.findOne(new mongoose.Types.ObjectId(candidate_id));
+        if (!result || !findCandidate) {
             res.json({ message: "Candidate not found and template not created" });
         } else {
+
+
             let preArrivalCheckListBody = new PreArrivalCheckList({
                 GAMCA_medical_attend_confirmation: {
                     confirmation: false,
@@ -36,13 +40,13 @@ const createTemplatePreArrival = async (req, res, next) => {
                     confirmation: false,
                 },
                 collect_passport_copy: {
-                    file_str: "",
-                    file_name: "",
+                    file_str: findCandidate?.passport_img.file_base64str,
+                    file_name: findCandidate?.passport_img.file_name,
                     confirmation: false,
                 },
                 collect_passport_size_photo: {
-                    file_str: "",
-                    file_name: "",
+                    file_str: findCandidate?.candidate_photo.file_base64str,
+                    file_name: findCandidate?.candidate_photo.file_name,
                     confirmation: false,
                 },
                 work_permit_application: {
@@ -88,6 +92,7 @@ const createTemplatePreArrival = async (req, res, next) => {
                 candidate_arrived_and_pickedup: {
                     confirmation: false,
                 },
+                all_checks_are_completed: false,
                 creationDate: Date.now(),
                 lastModifyDate: Date.now(),
                 check_list_for: candidate_id,
@@ -109,7 +114,8 @@ const updatePreArrivalChecks = async (req, res, next) => {
         collect_passport_size_photo, work_permit_application,
         medical_stamping, visa_application, sent_visa_to_candidate,
         sent_personal_data_sheet_to_candidate, receive_personal_data_sheet_from_candidate,
-        ticket_booking, schedule_candidate_arrival, candidate_arrived_and_pickedup
+        ticket_booking, schedule_candidate_arrival, candidate_arrived_and_pickedup,
+        all_checks_are_completed
     } = req.body;
 
 
@@ -176,6 +182,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
         candidate_arrived_and_pickedup: {
             confirmation: candidate_arrived_and_pickedup.confirmation,
         },
+        all_checks_are_completed,
         lastModifyDate: Date.now(),
     };
 
@@ -183,6 +190,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
 
     if (result) {
         res.json({ message: "pre arrival checklist Updated" });
+
     } else {
         res.json({ message: "data not updated, something went wrong" });
     }
@@ -190,55 +198,55 @@ const updatePreArrivalChecks = async (req, res, next) => {
 
 }
 
-const getArrivedCandidatesList = async (req,res,next) =>{
+const getArrivedCandidatesList = async (req, res, next) => {
     const page = Number(req.params.pageid);
 
     const pagesize = Number(req.params.pagesize);
-  
+
     const searchStr = req.params.searchstr;
-  
+
     let tempAllCandids = [];
-  
+
     let totalRecords = 0
-  
+
     if (searchStr == -1) {
-  
-      tempAllCandids = await PreArrivalCheckList.find({}).
-      populate({
-        path: "check_list_for",
-        match: { is_candidate_accept_offer: true },
-        select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
-      });
 
-      totalRecords = tempAllCandids.length;
-  
+        tempAllCandids = await PreArrivalCheckList.find({}).
+            populate({
+                path: "check_list_for",
+                match: { is_candidate_accept_offer: true },
+                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+            });
+
+        totalRecords = tempAllCandids.length;
+
     } else if (searchStr != -1 && typeof (searchStr) != Number) {
-  
-      const regex = new RegExp(searchStr, 'i');
-  
-      tempAllCandids = await PreArrivalCheckList.find({}).
-      populate({
-        path: "check_list_for",
-        match: { is_candidate_accept_offer: true,full_name: { $regex: regex } },
-        select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
-      });
 
-      tempAllCandids = tempAllCandids.filter(el=>el.check_list_for != null);
+        const regex = new RegExp(searchStr, 'i');
 
-      totalRecords = tempAllCandids.length;
+        tempAllCandids = await PreArrivalCheckList.find({}).
+            populate({
+                path: "check_list_for",
+                match: { is_candidate_accept_offer: true, full_name: { $regex: regex } },
+                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+            });
+
+        tempAllCandids = tempAllCandids.filter(el => el.check_list_for != null);
+
+        totalRecords = tempAllCandids.length;
     }
-  
-  
+
+
     if ((tempAllCandids.length >= pagesize) && (page >= 1)) {
-  
-      let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
-  
-      res.json({ total: totalRecords, data: sliceData });
-  
+
+        let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
+
+        res.json({ total: totalRecords, data: sliceData });
+
     } else {
-  
-      res.json({ total: totalRecords, data: tempAllCandids })
-  
+
+        res.json({ total: totalRecords, data: tempAllCandids })
+
     }
 }
 

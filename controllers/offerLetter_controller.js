@@ -25,6 +25,10 @@ const createOfferLetter = async (req, res, next) => {
     if (!allowance_for || !id) {
         res.json({ message: "Candidate id is missing or benfit id" });
     } else {
+        let body = {
+            candidate_status: "Offer Letter Sent"
+        }
+        await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for),body);
         const newOfferLetter = {
             basic_salary,
             food_allowance,
@@ -84,7 +88,10 @@ const reviseOfferLetter = async (req, res, next) => {
         ticket_allowance, allowance_for,
     } = req.body;
 
-
+    let body = {
+        candidate_status: "Offer Letter Revised"
+    }
+    await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for),body);
 
     const updateBody = {
         basic_salary,
@@ -146,6 +153,7 @@ const createOfferLetterTemplateForInterviewPassedCandid = async (req, res, next)
     if (!id) {
         res.json({ message: "id is not correct" })
     } else {
+        
         const newOfferLetter = new OfferLetter({
             basic_salary: null,
             food_allowance: null,
