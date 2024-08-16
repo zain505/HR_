@@ -115,7 +115,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
         medical_stamping, visa_application, sent_visa_to_candidate,
         sent_personal_data_sheet_to_candidate, receive_personal_data_sheet_from_candidate,
         ticket_booking, schedule_candidate_arrival, candidate_arrived_and_pickedup,
-        all_checks_are_completed
+        all_checks_are_completed, check_list_for
     } = req.body;
 
 
@@ -183,6 +183,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
             confirmation: candidate_arrived_and_pickedup.confirmation,
         },
         all_checks_are_completed,
+        check_list_for,
         lastModifyDate: Date.now(),
     };
 

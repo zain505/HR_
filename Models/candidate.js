@@ -42,7 +42,7 @@ const CandidateSchema = new Schema({
     is_candidate_interview_accept_reject: { type: Boolean, required: false, default: false },
     is_candidate_accept_offer:{ type: Boolean, required: false, default: false },
     is_candidate_pre_arrival_checks_completed:{ type: Boolean, required: false, default: false },
-    is_candidate_post_arrival_checks_completed:{ type: Boolean, required: false, default: false },
+    
 })
 
 module.exports = mongoose.model('Candidate', CandidateSchema)

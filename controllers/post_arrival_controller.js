@@ -4,26 +4,26 @@ const Email = require('../EmailController/Email')
 
 const PostArrivalCheckList = require("../Models/postarrivalchecklist")
 
-const Candidate = require("../Models/candidate");
+const Employee = require("../Models/employee");
 
 
 
 const createTemplatePostArrival = async (req, res, next) => {
 
-    const { candidate_id } = req.body;
+    const { employee_id } = req.body;
 
-    if (!candidate_id) {
+    if (!employee_id) {
 
-        res.json({ message: "candidate id is not correct" });
+        res.json({ message: "employee id is not correct" });
 
     } else {
         let body = {
-            is_candidate_pre_arrival_checks_completed: true,
+            is_employee_post_arrival_checks_completed: true,
            
         }
-        let result = await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(candidate_id), body);
+        let result = await Employee.findOneAndUpdate(new mongoose.Types.ObjectId(employee_id), body);
         if (!result) {
-            res.json({ message: "Candidate not found and template not created" });
+            res.json({ message: "employee not found and template not created" });
         } else {
             let postArrivalCheckListBody = new PostArrivalCheckList({
                 accommodation_arrangement: {
@@ -89,7 +89,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
         visa_medical, id_card_process,
         work_contract, safety_induction_to_candidate,
         issue_ppe, agreement_sign,
-        all_checks_are_completed
+        all_checks_are_completed,check_list_for
     } = req.body;
 
 
@@ -129,6 +129,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
             confirmation: agreement_sign.confirmation,
         },
         all_checks_are_completed,
+        check_list_for,
         lastModifyDate: Date.now(),
     };
 
@@ -160,8 +161,7 @@ const getArrivedCandidatesList = async (req, res, next) => {
         tempAllCandids = await PostArrivalCheckList.find({}).
             populate({
                 path: "check_list_for",
-                match: { is_candidate_pre_arrival_checks_completed: true },
-                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+                match: { isEmployee: true },
             });
 
         totalRecords = tempAllCandids.length;
