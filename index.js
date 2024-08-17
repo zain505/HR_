@@ -11,6 +11,7 @@ const employeeRoutes = require('./routes/employee')
 const offerletterRoutes = require('./routes/offerLetter')
 const preArrivalRoutes = require('./routes/preArrivalChecks')
 const postArrivalRoutes = require('./routes/postArrivalChecks')
+const workingHoursRoutes = require('./routes/workingHours')
 
 
 const app = express();
@@ -33,6 +34,8 @@ app.use('/api/offerLetter',offerletterRoutes)
 app.use('/api/preArrival',preArrivalRoutes)
 
 app.use('/api/postArrival',postArrivalRoutes)
+
+app.use('/api/workingHour',workingHoursRoutes)
 
 app.use('/', (req,res,next)=>{ 
   
