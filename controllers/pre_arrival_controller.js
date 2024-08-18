@@ -216,7 +216,7 @@ const getArrivedCandidatesList = async (req, res, next) => {
             populate({
                 path: "check_list_for",
                 match: { is_candidate_accept_offer: true },
-                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+                select: '_id full_name email department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
 
         totalRecords = tempAllCandids.length;
