@@ -4,26 +4,25 @@ const Email = require('../EmailController/Email')
 
 const PostArrivalCheckList = require("../Models/postarrivalchecklist")
 
-const Employee = require("../Models/employee");
+const Candidate = require("../Models/candidate");
 
 
 
 const createTemplatePostArrival = async (req, res, next) => {
 
-    const { employee_id } = req.body;
+    const { candidate_id } = req.body;
 
-    if (!employee_id) {
+    if (!candidate_id) {
 
-        res.status(400).json({ message: "employee id is not correct" });
+        res.status(400).json({ message: "candidate is not correct" });
 
     } else {
         let body = {
-            is_employee_post_arrival_checks_completed: true,
-           
+            is_candidate_pre_arrival_checks_completed: true,
         }
-        let result = await Employee.findOneAndUpdate(new mongoose.Types.ObjectId(employee_id), body);
+        let result = await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(candidate_id), body);
         if (!result) {
-            res.status(400).json({ message: "employee not found and template not created" });
+            res.status(400).json({ message: "candidate not found and template not created" });
         } else {
             let postArrivalCheckListBody = new PostArrivalCheckList({
                 accommodation_arrangement: {
@@ -89,7 +88,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
         visa_medical, id_card_process,
         work_contract, safety_induction_to_candidate,
         issue_ppe, agreement_sign,
-        all_checks_are_completed,check_list_for
+        all_checks_are_completed
     } = req.body;
 
 
@@ -161,7 +160,8 @@ const getArrivedCandidatesList = async (req, res, next) => {
         tempAllCandids = await PostArrivalCheckList.find({}).
             populate({
                 path: "check_list_for",
-                match: { isEmployee: true },
+                match: { is_candidate_pre_arrival_checks_completed: true },
+                select: '_id full_name email department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
 
         totalRecords = tempAllCandids.length;
@@ -174,7 +174,7 @@ const getArrivedCandidatesList = async (req, res, next) => {
             populate({
                 path: "check_list_for",
                 match: { is_candidate_pre_arrival_checks_completed: true, full_name: { $regex: regex } },
-                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+                select: '_id full_name email department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
 
         tempAllCandids = tempAllCandids.filter(el => el.check_list_for != null);
