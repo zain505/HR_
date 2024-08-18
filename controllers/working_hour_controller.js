@@ -4,6 +4,10 @@ const Email = require('../EmailController/Email')
 
 const WorkingHours = require("../Models/workinghours");
 
+const Employees = require("../Models/employee");
+
+const AppUtility = require("../appUtility/appUtility");
+
 
 
 const addEmployeeWorkingHour = async (req, res, next) => {
@@ -72,49 +76,118 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
 
     const searchStr = req.params.searchstr;
 
-    let tempAllCandids = [];
+    let todayDate = AppUtility.formatDate(new Date());
+
+    let finalEmployees = [];
 
     let totalRecords = 0
 
     if (searchStr == -1) {
+        const allActiveEmployees = await Employees.find({}).where("isEmployee").equals(true);
 
-        tempAllCandids = await WorkingHours.find({}).
+        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(todayDate).
             populate({
                 path: "employee",
                 match: { isEmployee: true },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
+        if (getTodayWorkingHours.length > 0) {
+            for (let i = 0; i < allActiveEmployees.length; i++) {
+                const ele1 = allActiveEmployees[i];
+                for (let j = 0; j < getTodayWorkingHours.length; j++) {
+                    const ele2 = getTodayWorkingHours[j];
+                    if (String(ele1._id) == String(ele2.employee._id)) {
+                        finalEmployees.push({
+                            employee_id: ele2._id,
+                            employee_name: ele2.employee.full_name,
+                            employee_department: ele2.employee.department_name,
+                            employee_email: ele2.employee.email,
+                            employee_designation: ele2.employee.designation,
+                            working_date: ele2.working_date ? ele2.working_date : null,
+                            work_start_time: ele2.work_start_time ? ele2.work_start_time : null,
+                            work_end_time: ele2.work_end_time ? ele2.work_end_time : null,
+                            is_half_day: ele2.is_half_day ? ele2.is_half_day : null,
+                            mark_absent: ele2.mark_absent ? ele2.mark_absent : null
+                        });
+                    } else {
+                        finalEmployees.push({
+                            employee_id: ele1._id,
+                            employee_name: ele1.full_name,
+                            employee_department: ele1.department_name,
+                            employee_email: ele1.email,
+                            employee_designation: ele1.designation,
+                            working_date: ele1.working_date ? ele1.working_date : null,
+                            work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
+                            work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
+                            is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
+                            mark_absent: ele1.mark_absent ? ele1.mark_absent : null
 
-        totalRecords = tempAllCandids.length;
-
+                        });
+                    }
+                }
+            }
+            totalRecords = finalEmployees.length;
+            res.status(200).json({ total: totalRecords, data: finalEmployees })
+        } else {
+            totalRecords = allActiveEmployees.length;
+            res.status(200).json({ total: totalRecords, data: allActiveEmployees })
+        }
     } else if (searchStr != -1 && typeof (searchStr) != Number) {
-
         const regex = new RegExp(searchStr, 'i');
+        const allActiveEmployees = await Employees.find({ full_name: { $regex: regex } }).where("isEmployee").equals(true);
 
-        tempAllCandids = await WorkingHours.find({}).
+        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(todayDate).
             populate({
-                path: "check_list_for",
-                match: { is_candidate_accept_offer: true, full_name: { $regex: regex } },
+                path: "employee",
+                match: { isEmployee: true, full_name: { $regex: regex } },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
+        if (getTodayWorkingHours.length > 0) {
+            for (let i = 0; i < allActiveEmployees.length; i++) {
+                const ele1 = allActiveEmployees[i];
+                for (let j = 0; j < getTodayWorkingHours.length; j++) {
+                    const ele2 = getTodayWorkingHours[j];
+                    if (String(ele1?._id) == String(ele2.employee?._id)) {
+                        finalEmployees.push({
+                            employee_id: ele2._id,
+                            employee_name: ele2.employee.full_name,
+                            employee_department: ele2.employee.department_name,
+                            employee_email: ele2.employee.email,
+                            employee_designation: ele2.employee.designation,
+                            working_date: ele2.working_date ? ele2.working_date : null,
+                            work_start_time: ele2.work_start_time ? ele2.work_start_time : null,
+                            work_end_time: ele2.work_end_time ? ele2.work_end_time : null,
+                            is_half_day: ele2.is_half_day ? ele2.is_half_day : null,
+                            mark_absent: ele2.mark_absent ? ele2.mark_absent : null
+                        });
+                    } else {
+                        finalEmployees.push({
+                            employee_id: ele1._id,
+                            employee_name: ele1.full_name,
+                            employee_department: ele1.department_name,
+                            employee_email: ele1.email,
+                            employee_designation: ele1.designation,
+                            working_date: ele1.working_date ? ele1.working_date : null,
+                            work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
+                            work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
+                            is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
+                            mark_absent: ele1.mark_absent ? ele1.mark_absent : null
 
-        tempAllCandids = tempAllCandids.filter(el => el.check_list_for != null);
-
-        totalRecords = tempAllCandids.length;
+                        });
+                    }
+                }
+            }
+            totalRecords = finalEmployees.length;
+            res.status(200).json({ total: totalRecords, data: finalEmployees })
+        } else {
+            totalRecords = allActiveEmployees.length;
+            res.status(200).json({ total: totalRecords, data: allActiveEmployees })
+        }
     }
 
 
-    if ((tempAllCandids.length >= pagesize) && (page >= 1)) {
 
-        let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
 
-        res.status(200).json({ total: totalRecords, data: sliceData });
-
-    } else {
-
-        res.status(200).json({ total: totalRecords, data: tempAllCandids })
-
-    }
 }
 
 exports.addEmployeeWorkingHour = addEmployeeWorkingHour;
