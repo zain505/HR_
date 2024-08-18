@@ -16,7 +16,7 @@ const createTemplatePreArrival = async (req, res, next) => {
 
     if (!candidate_id) {
 
-        res.json({ message: "candidate id is not correct" });
+        res.status(400).json({ message: "candidate id is not correct" });
 
     } else {
         let body = {
@@ -26,7 +26,7 @@ const createTemplatePreArrival = async (req, res, next) => {
         let result = await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(candidate_id), body);
         const findCandidate = await Candidate.findOne(new mongoose.Types.ObjectId(candidate_id));
         if (!result || !findCandidate) {
-            res.json({ message: "Candidate not found and template not created" });
+            res.status(400).json({ message: "Candidate not found and template not created" });
         } else {
 
 
@@ -100,7 +100,7 @@ const createTemplatePreArrival = async (req, res, next) => {
 
             await preArrivalCheckListBody.save();
 
-            res.json({ message: "pre arrival checklist template created" });
+            res.status(200).json({ message: "pre arrival checklist template created" });
         }
 
 
@@ -190,10 +190,10 @@ const updatePreArrivalChecks = async (req, res, next) => {
     const result = await PreArrivalCheckList.findOneAndUpdate(new mongoose.Types.ObjectId(id), preArrivalCheckListBody)
 
     if (result) {
-        res.json({ message: "pre arrival checklist Updated" });
+        res.status(200).json({ message: "pre arrival checklist Updated" });
 
     } else {
-        res.json({ message: "data not updated, something went wrong" });
+        res.status(400).json({ message: "data not updated, something went wrong" });
     }
 
 
@@ -212,7 +212,7 @@ const getArrivedCandidatesList = async (req, res, next) => {
 
     if (searchStr == -1) {
 
-        tempAllCandids = await PreArrivalCheckList.find({}).
+        tempAllCandids = await PreArrivalCheckList.find({}).where("all_checks_are_completed").equals(false).
             populate({
                 path: "check_list_for",
                 match: { is_candidate_accept_offer: true },
@@ -225,11 +225,11 @@ const getArrivedCandidatesList = async (req, res, next) => {
 
         const regex = new RegExp(searchStr, 'i');
 
-        tempAllCandids = await PreArrivalCheckList.find({}).
+        tempAllCandids = await PreArrivalCheckList.find({}).where("all_checks_are_completed").equals(false).
             populate({
                 path: "check_list_for",
                 match: { is_candidate_accept_offer: true, full_name: { $regex: regex } },
-                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+                select: '_id full_name email department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
 
         tempAllCandids = tempAllCandids.filter(el => el.check_list_for != null);
@@ -242,11 +242,11 @@ const getArrivedCandidatesList = async (req, res, next) => {
 
         let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
 
-        res.json({ total: totalRecords, data: sliceData });
+        res.status(200).json({ total: totalRecords, data: sliceData });
 
     } else {
 
-        res.json({ total: totalRecords, data: tempAllCandids })
+        res.status(200).json({ total: totalRecords, data: tempAllCandids })
 
     }
 }

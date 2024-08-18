@@ -39,11 +39,11 @@ const getUsers = async (req, res, next) => {
 
     let sliceData = getSignedUpAllUsers.slice(pagesize * (page - 1), pagesize * page);
 
-    res.json(sliceData);
+    res.status(200).json(sliceData);
 
   } else {
 
-    res.json(getSignedUpAllUsers)
+    res.status(200).json(getSignedUpAllUsers)
 
   }
 
@@ -58,28 +58,29 @@ const signup = async (req, res, next) => {
   const hasUser = getSignedUpAllUsers.find(u => u.email === email);
 
   if (hasUser) {
-    // throw new HttpError('Could not create user, email already exists.', 422);
-    return console.log("user exists")
+    res.status(400).json({message:"user already exists"});
+  }else{
+    const createdUser = new User({
+
+      name, // name: name
+      email,
+      password,
+      role,
+      creationDate:Date.now(),
+      lastModifyDate:Date.now(),
+      isActive:true
+    });
+    try {
+      createdUser.save();
+  
+    } catch (error) {
+      res.status(400).json({ message: error });
+    }
+  
+    res.status(201).json({ user: createdUser });
   }
 
-  const createdUser = new User({
-
-    name, // name: name
-    email,
-    password,
-    role,
-    creationDate:Date.now(),
-    lastModifyDate:Date.now(),
-    isActive:true
-  });
-  try {
-    createdUser.save();
-
-  } catch (error) {
-    console.log('something went wrong', error)
-  }
-
-  res.status(201).json({ user: createdUser });
+  
 };
 
 const login = async (req, res, next) => {

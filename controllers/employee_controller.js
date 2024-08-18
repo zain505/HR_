@@ -14,11 +14,11 @@ const createEmployeeFromCandid = async (req, res, next) => {
   const findCandidate = await Candidate.findOne(new mongoose.Types.ObjectId(cadid_id));
 
   if (!findCandidate) {
-    res.json({ message: "candidate not found" });
+    res.status(400).json({ message: "candidate not found" });
   } else {
 
     if (findCandidate.isEmployee) {
-      res.json({ message: "this candidate is already employee" });
+      res.status(400).json({ message: "this candidate is already employee" });
     } else {
 
       let newEmployee = new Employee({
@@ -72,10 +72,10 @@ const createEmployeeFromCandid = async (req, res, next) => {
 
         await newEmployee.save();
 
-        res.json({ message: "new employee created" })
+        res.status(201).json({ message: "new employee created" })
 
       } catch (error) {
-        res.json({ message: "some thing went wrong, employee not saved" });
+        res.status(400).json({ message: "some thing went wrong, employee not saved" });
         console.log(error)
       }
     }
@@ -93,7 +93,7 @@ const updateEmployee = async (req, res, next) => {
   } = req.body;
 
   if (!id) {
-    res.json({ message: "id is not correct" })
+    res.status(400).json({ message: "id is not correct" })
   } else {
 
     let body = {
@@ -128,9 +128,9 @@ const updateEmployee = async (req, res, next) => {
     const result = await Employee.findOneAndUpdate(new mongoose.Types.ObjectId(id), body)
 
     if (result) {
-      res.json({ message: "1 record updated" })
+      res.status(201).json({ message: "1 record updated" })
     } else {
-      res.json({ message: "record not updated" })
+      res.status(400).json({ message: "record not updated" })
     }
   }
 }
@@ -163,11 +163,11 @@ const getAllEmployeesData = async (req, res, next) => {
 
     let sliceData = tempAllEmployees.slice(pagesize * (page - 1), pagesize * page);
 
-    res.json({ total: total, data: sliceData });
+    res.status(200).json({ total: total, data: sliceData });
 
   } else {
 
-    res.json({ total: total, data: tempAllEmployees })
+    res.status(200).json({ total: total, data: tempAllEmployees })
 
   }
 

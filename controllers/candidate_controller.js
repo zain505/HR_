@@ -37,11 +37,11 @@ const getAllRegisteredCandidates = async (req, res, next) => {
 
     let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
 
-    res.json({ total: totalCandids, data: sliceData });
+    res.status(200).json({ total: totalCandids, data: sliceData });
 
   } else {
 
-    res.json({ total: totalCandids, data: tempAllCandids })
+    res.status(200).json({ total: totalCandids, data: tempAllCandids })
 
   }
 
@@ -109,7 +109,7 @@ const createCandidate = async (req, res, next) => {
       candidate.save()
 
     } catch (error) {
-
+      res.status(400).json({message:error})
       console.log("something went wrong", error)
 
     }
@@ -174,6 +174,7 @@ const updateCandidate = async (req, res, next) => {
     try {
       await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody);
     } catch (error) {
+      res.status(400).json({message:error})
       console.log("something went wrong", error)
     }
 
@@ -197,7 +198,7 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
 
       await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
 
-      res.json({ message: "Candidate approved for interview by admin" });
+      res.status(200).json({ message: "Candidate approved for interview by admin" });
     } else {
       let updatedBody = {
         is_candidate_approved_by_admin_for_interview,
@@ -207,10 +208,10 @@ const updateCandidateAdminApprovalStatus = async (req, res, next) => {
 
       await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updatedBody)
 
-      res.json({ message: "Candidate is not approved for interview by admin" });
+      res.status(400).json({ message: "Candidate is not approved for interview by admin" });
     }
   } else {
-    res.json({ message: "id is not correct" });
+    res.status(400).json({ message: "id is not correct" });
   }
 
 
@@ -223,7 +224,7 @@ const getAllAdminApprovedCandids = async (req, res, next) => {
 
   const allAdminApprovedCandids = await Candidate.find({}).and([{ is_candidate_interview_accept_reject: false }, { is_candidate_approved_by_admin_for_interview: true }]);
 
-  res.json(allAdminApprovedCandids);
+  res.status(200).json(allAdminApprovedCandids);
 
 }
 
@@ -233,10 +234,10 @@ const deleteCandidate = async (req, res, next) => {
   const result = await Candidate.findByIdAndDelete(new mongoose.Types.ObjectId(id));
 
   if (result == null) {
-    res.json({ message: "Id is not correct or id does not exist" });
+    res.status(400).json({ message: "Id is not correct or id does not exist" });
 
   } else {
-    res.json({ message: "1 record deleted" });
+    res.status(200).json({ message: "1 record deleted" });
 
   }
 
@@ -249,7 +250,7 @@ const uploadCVCandidate = async (req, res, next) => {
   const { id, candidate_cv } = req.body;
 
   if (!candidate_cv || !candidate_cv.file_base64str || !candidate_cv.file_name) {
-    res.json({ message: "some fields are missing" })
+    res.status(400).json({ message: "some fields are missing" })
     return;
   }
 
@@ -266,20 +267,20 @@ const uploadCVCandidate = async (req, res, next) => {
 
   if (!fetchTargetCandid) {
 
-    res.json({ message: "Target Candidate not found" });
+    res.status(400).json({ message: "Target candidate not found" });
 
   } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
-    res.json({ message: "Admin approval required" });
+    res.status(400).json({ message: "Admin approval required" });
 
   } else {
     const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
 
     if (result == null) {
-      res.json({ message: "Id is not correct or id does not exist" });
+      res.status(400).json({ message: "Id is not correct or id does not exist" });
 
     } else {
-      res.json({ message: "cv file uploaded" });
+      res.status(200).json({ message: "cv file uploaded" });
 
     }
 
@@ -302,20 +303,20 @@ const markCVReviewed = async (req, res, next) => {
 
   if (!fetchTargetCandid) {
 
-    res.json({ message: "Target Candidate not found" });
+    res.status(400).json({ message: "Target Candidate not found" });
 
   } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
-    res.json({ message: "Admin approval required" });
+    res.status(400).json({ message: "Admin approval required" });
 
   } else {
     const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
 
     if (result == null) {
-      res.json({ message: "Id is not correct or id does not exist" });
+      res.status(400).json({ message: "Id is not correct or id does not exist" });
 
     } else {
-      res.json({ message: "cv marked reviewed " });
+      res.status(200).json({ message: "cv marked reviewed " });
 
     }
 
@@ -345,20 +346,20 @@ const updateCVResult = async (req, res, next) => {
 
   if (!fetchTargetCandid) {
 
-    res.json({ message: "Target Candidate not found" });
+    res.status(400).json({ message: "Target Candidate not found" });
 
   } else if (!fetchTargetCandid.is_candidate_approved_by_admin_for_interview) {
 
-    res.json({ message: "Admin approval required" });
+    res.status(400).json({ message: "Admin approval required" });
 
   } else {
     const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
 
     if (result == null) {
-      res.json({ message: "Id is not correct or id does not exist" });
+      res.status(400).json({ message: "Id is not correct or id does not exist" });
 
     } else {
-      res.json({ message: `CV ${candidate_status}` });
+      res.status(200).json({ message: `CV ${candidate_status}` });
 
     }
   }
@@ -381,10 +382,10 @@ const scheduleCandidateInterview = async (req, res, next) => {
   const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
 
   if (result == null) {
-    res.json({ message: "Id is not correct or id does not exist" });
+    res.status(400).json({ message: "Id is not correct or id does not exist" });
 
   } else {
-    res.json({ message: "interview scheduled" });
+    res.status(200).json({ message: "interview scheduled" });
 
   }
 
@@ -413,10 +414,10 @@ const markedInterview = async (req, res, next) => {
 
   const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
   if (result == null) {
-    res.json({ message: "Id is not correct or id does not exist" });
+    res.status(400).json({ message: "Id is not correct or id does not exist" });
 
   } else {
-    res.json({ message: "Interview Marked" });
+    res.status(200).json({ message: "Interview Marked" });
 
   }
 }
@@ -441,10 +442,10 @@ const updateInterviewStatus = async (req, res, next) => {
   }
   const result = await Candidate.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
   if (result == null) {
-    res.json({ message: "Id is not correct or id does not exist" });
+    res.status(400).json({ message: "Id is not correct or id does not exist" });
 
   } else {
-    res.json({ message: "RECRUITMENT PROCESS COMPLETED" });
+    res.status(200).json({ message: "RECRUITMENT PROCESS COMPLETED" });
   }
 }
 
@@ -452,14 +453,14 @@ const getSingleCandidateById = async (req, res, next) => {
   const id = req.params.id;
 
   if (!id) {
-    res.json({ message: "id is not correct" })
+    res.status(400).json({ message: "id is not correct" })
   } else {
     const result = await candidate.findOne(new mongoose.Types.ObjectId(id));
 
     if (!result) {
-      res.json({ message: "No Candidate for given id" })
+      res.status(400).json({ message: "No Candidate for given id" })
     } else {
-      res.json(result)
+      res.status(200).json(result)
     }
   }
 }

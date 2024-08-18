@@ -15,7 +15,7 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
     if (!employee_id) {
 
-        res.json({ message: "employee id is not correct" });
+        res.status(400).json({ message: "employee id is not correct" });
 
     } else {
         let WorkingHoursBody = new WorkingHours({
@@ -31,7 +31,7 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
         await WorkingHoursBody.save();
 
-        res.json({ message: "today working hours added" });
+        res.status(200).json({ message: "today working hours added" });
 
     }
 }
@@ -56,10 +56,10 @@ const updateWorkingHour = async (req, res, next) => {
     const result = await PreArrivalCheckList.findOneAndUpdate(new mongoose.Types.ObjectId(id), body)
 
     if (result) {
-        res.json({ message: "employee working hour Updated" });
+        res.status(200).json({ message: "employee working hour Updated" });
 
     } else {
-        res.json({ message: "data not updated, something went wrong" });
+        res.status(400).json({ message: "data not updated, something went wrong" });
     }
 
 
@@ -108,11 +108,11 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
 
         let sliceData = tempAllCandids.slice(pagesize * (page - 1), pagesize * page);
 
-        res.json({ total: totalRecords, data: sliceData });
+        res.status(200).json({ total: totalRecords, data: sliceData });
 
     } else {
 
-        res.json({ total: totalRecords, data: tempAllCandids })
+        res.status(200).json({ total: totalRecords, data: tempAllCandids })
 
     }
 }

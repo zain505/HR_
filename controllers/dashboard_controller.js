@@ -1,11 +1,14 @@
 const User = require('../Models/user')
 const Candidate = require('../Models/candidate');
+const Employee = require('../Models/employee');
 
 const getAllMasterInfo = async (req, res, next) => {
 
     const totalUsersFromDb = await User.find({});
 
     const totalCandidatesFromDb = await Candidate.find({});
+
+    const totalEmployeesFromDB = await Employee.find({});
 
     // user master info
 
@@ -24,13 +27,18 @@ const getAllMasterInfo = async (req, res, next) => {
 
     const totalCandids = totalCandidatesFromDb.length;
 
-    res.json({
+    //employees master info;
+
+    const totalActiveEmployees = totalEmployeesFromDB.filter(emp=>emp.isEmployee);
+
+    res.status(200).json({
         totalActiveusers,
         totalUsers,
         totalActiveCandids,
         totalCandids,
         totalInActiveusers,
-        totalInActiveCandids
+        totalInActiveCandids,
+        totalActiveEmployees
     })
 
 

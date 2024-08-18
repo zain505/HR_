@@ -23,7 +23,7 @@ const createOfferLetter = async (req, res, next) => {
     const findEmailCandid = await Candidate.findOne(new mongoose.Types.ObjectId(id));
 
     if (!allowance_for || !id) {
-        res.json({ message: "Candidate id is missing or benfit id" });
+        res.status(400).json({ message: "Candidate id is missing or benfit id" });
     } else {
         let body = {
             candidate_status: "Offer Letter Sent"
@@ -62,13 +62,12 @@ const createOfferLetter = async (req, res, next) => {
                     res.json({message:"Offer Letter Created but email not sent for some unkknow reasons"})
                 }
                 
-                
             }else{
                 res.status(400).json({ message: "offer letter not saved" });  
             }
 
         } catch (error) {
-
+            res.status(400).json({ message: error });  
             console.log("something went wrong", error)
 
         }
@@ -121,11 +120,11 @@ const reviseOfferLetter = async (req, res, next) => {
         if (result) {
             res.json({ message: "Offer letter revised" });
         } else {
-            res.json({ message: "id is not correct" });
+            res.status(400).json({ message: "id is not correct" });
         }
 
     } catch (error) {
-
+        res.status(400).json({ message: error });
         console.log("something went wrong", error)
 
     }
@@ -151,7 +150,7 @@ const getAllBenefitedCandids = async (req, res, next) => {
 const createOfferLetterTemplateForInterviewPassedCandid = async (req, res, next) => {
     const id = req.params.id;
     if (!id) {
-        res.json({ message: "id is not correct" })
+        res.status(400).json({ message: "id is not correct" })
     } else {
         
         const newOfferLetter = new OfferLetter({
@@ -176,10 +175,10 @@ const createOfferLetterTemplateForInterviewPassedCandid = async (req, res, next)
 
             await newOfferLetter.save();
 
-            res.json({ message: "offer letter template created" })
+            res.status(200).json({ message: "offer letter template created" })
 
         } catch (error) {
-
+            res.status(400).json({ message: error })
             console.log("something went wrong", error);
 
         }
@@ -190,13 +189,13 @@ const deletebenifitForCanid = async (req, res, next) => {
     const id = req.params.id;
 
     if (!id) {
-        res.json({ message: "id is not correct" });
+        res.status(400).json({ message: "id is not correct" });
     } else {
         const result = await OfferLetter.findByIdAndDelete(new mongoose.Types.ObjectId(id))
         if (result) {
-            res.json({ message: "Benefit Deleted" });
+            res.status(200).json({ message: "Benefit Deleted" });
         } else {
-            res.json({ message: "No Benefit Found against given id" });
+            res.status(400).json({ message: "No Benefit Found against given id" });
         }
     }
 }
