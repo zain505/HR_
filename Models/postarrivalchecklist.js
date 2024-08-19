@@ -50,7 +50,7 @@ const PostArrivalCheckList = new Schema({
     creationDate: { type: Date, required: false },
     lastModifyDate: { type: Date, required: false },
     all_checks_are_completed: { type: Boolean, default: false, required: false },
-    check_list_for: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
+    check_list_for: { type: mongoose.Schema.Types.ObjectId, ref: 'Candidate' },
 })
 
 module.exports = mongoose.model('PostArrivalCheckList', PostArrivalCheckList)

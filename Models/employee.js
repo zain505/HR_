@@ -38,6 +38,6 @@ const EmployeeSchema = new Schema({
     is_employee_post_arrival_checks_completed: { type: Boolean, required: false, default: false },
     benefit: { type: mongoose.Schema.Types.ObjectId, ref: 'OfferLetter' }
 })
-
+ 
 module.exports = mongoose.model('Employee', EmployeeSchema)
 
