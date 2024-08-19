@@ -14,4 +14,6 @@ router.post('/update-add-working-hours', verifyToken, WorkingHourController.upda
 
 router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToken, WorkingHourController.getWorkingHourOfEmployee);
 
+router.get('/get-employee-working-hour/employee_id=:employee_id&fromDate=:fromDate&endDate=:endDate', verifyToken, WorkingHourController.getWorkingHourOfEmployeeByDate);
+
 module.exports = router;
