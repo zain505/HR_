@@ -76,7 +76,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
 
     const searchStr = req.params.searchstr;
 
-    let todayDate = AppUtility.formatDate(new Date());
+    let today = AppUtility.formatDate(new Date())
 
     let finalEmployees = [];
 
@@ -85,7 +85,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
     if (searchStr == -1) {
         const allActiveEmployees = await Employees.find({}).where("isEmployee").equals(true);
 
-        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(todayDate).
+        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(today).
             populate({
                 path: "employee",
                 match: { isEmployee: true },
@@ -96,7 +96,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                 const ele1 = allActiveEmployees[i];
                 for (let j = 0; j < getTodayWorkingHours.length; j++) {
                     const ele2 = getTodayWorkingHours[j];
-                    if (String(ele1._id) == String(ele2.employee._id)) {
+                    if (String(ele1._id) == String(ele2.employee?._id)) {
                         finalEmployees.push({
                             employee_id: ele2._id,
                             employee_name: ele2.employee.full_name,
@@ -136,7 +136,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
         const regex = new RegExp(searchStr, 'i');
         const allActiveEmployees = await Employees.find({ full_name: { $regex: regex } }).where("isEmployee").equals(true);
 
-        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(todayDate).
+        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").equals(today).
             populate({
                 path: "employee",
                 match: { isEmployee: true, full_name: { $regex: regex } },
@@ -184,12 +184,33 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
             res.status(200).json({ total: totalRecords, data: allActiveEmployees })
         }
     }
+}
 
+const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
 
+    const fromDate = req.params.fromDate;
 
+    const endDate = req.params.endDate;
 
+    const employee_id = req.params.employee_id;
+
+    let total = 0;
+
+    if ((!fromDate || !endDate || !employee_id)) {
+        res.status(400).json({ message: "All filter fields are required" });
+    } else {
+        const getTodayWorkingHours = await WorkingHours.find({}).
+            populate({
+                path: "employee",
+                // match: { _id: employee_id },
+                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
+            });
+            total = getTodayWorkingHours.length;
+        res.status(200).json({total:total, data: getTodayWorkingHours });
+    }
 }
 
 exports.addEmployeeWorkingHour = addEmployeeWorkingHour;
 exports.updateWorkingHour = updateWorkingHour;
 exports.getWorkingHourOfEmployee = getWorkingHourOfEmployee;
+exports.getWorkingHourOfEmployeeByDate = getWorkingHourOfEmployeeByDate;

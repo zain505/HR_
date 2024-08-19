@@ -128,7 +128,6 @@ const updatePreArrivalChecks = async (req, res, next) => {
             confirmation: agreement_sign.confirmation,
         },
         all_checks_are_completed,
-        check_list_for,
         lastModifyDate: Date.now(),
     };
 
@@ -159,7 +158,7 @@ const getArrivedCandidatesList = async (req, res, next) => {
 
         tempAllCandids = await PostArrivalCheckList.find({}).
             populate({
-                path: "check_list_for",
+                path: "check_list_for", 
                 match: { is_candidate_pre_arrival_checks_completed: true },
                 select: '_id full_name email department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });

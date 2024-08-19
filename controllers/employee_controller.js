@@ -6,17 +6,29 @@ const mongoose = require('mongoose');
 
 const Candidate = require('../Models/candidate');
 
+const Benefit = require('../Models/offerletter');
+
 const Employee = require('../Models/employee');
 
 const createEmployeeFromCandid = async (req, res, next) => {
-  const { cadid_id, benifit_id } = req.body;
+  const { cadid_id } = req.body;
 
   const findCandidate = await Candidate.findOne(new mongoose.Types.ObjectId(cadid_id));
 
-  if (!findCandidate) {
-    res.status(400).json({ message: "candidate not found" });
-  } else {
+  const CandidateBenefit = await Benefit.findOne({}).
+    populate(
+      {
+        path: "allowance_for",
+        match: { _id: new mongoose.Types.ObjectId(cadid_id) },
+      })
 
+  if (!findCandidate || !CandidateBenefit) {
+    res.status(400).json({ message: "candidate not found or associate offer letter not found" });
+  } else {
+    
+    await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(cadid_id), { isEmployee: true })
+
+    
     if (findCandidate.isEmployee) {
       res.status(400).json({ message: "this candidate is already employee" });
     } else {
@@ -65,7 +77,7 @@ const createEmployeeFromCandid = async (req, res, next) => {
         gross_salary: findCandidate.gross_salary,
         creationDate: Date.now(),
         lastModifyDate: Date.now(),
-        benefit: benifit_id
+        benefit: CandidateBenefit._id
       })
 
       try {
