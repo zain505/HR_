@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.post('/create-post-arrival-checks-template', verifyToken, PostArrivalChecksController.createTemplatePostArrival);
 
-router.post('/update-post-arrival-checks', verifyToken, PostArrivalChecksController.updatePreArrivalChecks);
+router.post('/update-post-arrival-checks', verifyToken, PostArrivalChecksController.updatePostArrivalChecks);
 
-router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToken, PostArrivalChecksController.getArrivedCandidatesList);
+router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToken, PostArrivalChecksController.getPostCandidatesList);
 
 module.exports = router;

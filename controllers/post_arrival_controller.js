@@ -82,7 +82,7 @@ const createTemplatePostArrival = async (req, res, next) => {
     }
 }
 
-const updatePreArrivalChecks = async (req, res, next) => {
+const updatePostArrivalChecks = async (req, res, next) => {
 
     const { id, accommodation_arrangement,
         visa_medical, id_card_process,
@@ -101,38 +101,44 @@ const updatePreArrivalChecks = async (req, res, next) => {
             file_str: visa_medical.file_str,
             file_name: visa_medical.file_name,
             confirmation: visa_medical.confirmation,
+            additional_info:visa_medical.additional_info
         },
         id_card_process: {
             file_str: id_card_process.file_str,
             file_name: id_card_process.file_name,
             confirmation: id_card_process.confirmation,
+            additional_info:id_card_process.additional_info
         },
         work_contract: {
             file_str: work_contract.file_str,
             file_name: work_contract.file_name,
             confirmation: work_contract.confirmation,
+            additional_info:work_contract.additional_info
         },
         safety_induction_to_candidate: {
             file_str: safety_induction_to_candidate.file_str,
             file_name: safety_induction_to_candidate.file_name,
             confirmation: safety_induction_to_candidate.confirmation,
+            additional_info:safety_induction_to_candidate.additional_info
         },
         issue_ppe: {
             file_str: issue_ppe.file_str,
             file_name: issue_ppe.file_name,
             confirmation: issue_ppe.confirmation,
+            additional_info:issue_ppe.additional_info,
         },
         agreement_sign: {
             file_str: agreement_sign.file_str,
             file_name: agreement_sign.file_name,
             confirmation: agreement_sign.confirmation,
+            additional_info:agreement_sign.additional_info
         },
         all_checks_are_completed,
         lastModifyDate: Date.now(),
     };
 
     const result = await PostArrivalCheckList.findOneAndUpdate(new mongoose.Types.ObjectId(id), preArrivalCheckListBody)
-
+ 
     if (result) {
         res.status(200).json({ message: "pre arrival checklist Updated" });
 
@@ -143,7 +149,7 @@ const updatePreArrivalChecks = async (req, res, next) => {
 
 }
 
-const getArrivedCandidatesList = async (req, res, next) => {
+const getPostCandidatesList = async (req, res, next) => {
     const page = Number(req.params.pageid);
 
     const pagesize = Number(req.params.pagesize);
@@ -196,5 +202,5 @@ const getArrivedCandidatesList = async (req, res, next) => {
 }
 
 exports.createTemplatePostArrival = createTemplatePostArrival;
-exports.updatePreArrivalChecks = updatePreArrivalChecks;
-exports.getArrivedCandidatesList = getArrivedCandidatesList;
+exports.updatePostArrivalChecks = updatePostArrivalChecks;
+exports.getPostCandidatesList = getPostCandidatesList;

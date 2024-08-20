@@ -28,26 +28,26 @@ const createOfferLetter = async (req, res, next) => {
         let body = {
             candidate_status: "Offer Letter Sent"
         }
-        await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for),body);
+        await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for), body);
         const newOfferLetter = {
             basic_salary,
             food_allowance,
             transportation_allowance,
-             accommodation_allowance,
-            room_type, 
-            telephone_allowance, 
-            extra_hour_allowance, 
-            laundary_allowance, 
+            accommodation_allowance,
+            room_type,
+            telephone_allowance,
+            extra_hour_allowance,
+            laundary_allowance,
             bonus,
-            special_allowance, 
-            performance_allowance, 
-            travelling_allowance, 
+            special_allowance,
+            performance_allowance,
+            travelling_allowance,
             contract_period,
-            ticket_allowance, 
+            ticket_allowance,
             allowance_for,
-            offer_letter_status:"Pending",
-            is_offer_letter_submit:true,
-            is_offer_letter_revise:false
+            offer_letter_status: "Pending",
+            is_offer_letter_submit: true,
+            is_offer_letter_revise: false
         }
 
         try {
@@ -55,19 +55,19 @@ const createOfferLetter = async (req, res, next) => {
             const result = await OfferLetter.findByIdAndUpdate(new mongoose.Types.ObjectId(id), newOfferLetter);
 
             if (result) {
-                if(findEmailCandid){
-                    Email.sendEmail(newOfferLetter,findEmailCandid.email, 2);
-                    res.status(201).json({ offerletter: newOfferLetter,message:"Offer Letter Created and email sent" });
-                }else{
-                    res.json({message:"Offer Letter Created but email not sent for some unkknow reasons"})
+                if (findEmailCandid) {
+                    Email.sendEmail(newOfferLetter, findEmailCandid.email, 2);
+                    res.status(201).json({ offerletter: newOfferLetter, message: "Offer Letter Created and email sent" });
+                } else {
+                    res.json({ message: "Offer Letter Created but email not sent for some unkknow reasons" })
                 }
-                
-            }else{
-                res.status(400).json({ message: "offer letter not saved" });  
+
+            } else {
+                res.status(400).json({ message: "offer letter not saved" });
             }
 
         } catch (error) {
-            res.status(400).json({ message: error });  
+            res.status(400).json({ message: error });
             console.log("something went wrong", error)
 
         }
@@ -90,7 +90,7 @@ const reviseOfferLetter = async (req, res, next) => {
     let body = {
         candidate_status: "Offer Letter Revised"
     }
-    await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for),body);
+    await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(allowance_for), body);
 
     const updateBody = {
         basic_salary,
@@ -135,14 +135,55 @@ const reviseOfferLetter = async (req, res, next) => {
 
 const getAllBenefitedCandids = async (req, res, next) => {
 
-    const result = await OfferLetter.find().
+    const page = Number(req.params.pageid);
+
+    const pagesize = Number(req.params.pagesize);
+
+    const searchStr = req.params.searchstr;
+
+    let benefitsList = [];
+
+    let total = 0;
+
+    if (searchStr == -1) {
+
+        benefitsList = await OfferLetter.find().
+            populate({
+                path: "allowance_for",
+                match: { is_candidate_interview_accept_reject: true, is_candidate_accept_offer: false },
+                select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject'
+            });
+
+            benefitsList = benefitsList.filter(b=>b.allowance_for!=null)
+
+            total = benefitsList.length;
+
+    } else if (searchStr != -1 && typeof (searchStr) != Number) {
+
+        const regex = new RegExp(searchStr, 'i');
+
+        benefitsList = await OfferLetter.find().
         populate({
             path: "allowance_for",
-            match: { is_candidate_interview_accept_reject: true },
+            match: { full_name: { $regex: regex }, is_candidate_interview_accept_reject: true, is_candidate_accept_offer: false },
             select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject'
-        });
+        }) 
+        benefitsList = benefitsList.filter(b=>b.allowance_for!=null)
+        total = benefitsList.length;
+    }
 
-    res.json(result);
+
+    if ((benefitsList.length >= pagesize) && (page >= 1)) {
+
+        let sliceData = benefitsList.slice(pagesize * (page - 1), pagesize * page);
+
+        res.status(200).json({ total: total, data: sliceData });
+
+    } else {
+
+        res.status(200).json({ total: total, data: benefitsList })
+
+    }
 
 
 }
@@ -152,7 +193,7 @@ const createOfferLetterTemplateForInterviewPassedCandid = async (req, res, next)
     if (!id) {
         res.status(400).json({ message: "id is not correct" })
     } else {
-        
+
         const newOfferLetter = new OfferLetter({
             basic_salary: null,
             food_allowance: null,

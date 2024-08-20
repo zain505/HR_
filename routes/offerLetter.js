@@ -14,7 +14,7 @@ router.get('/create-template-offer-letter&:candid-id=:id', verifyToken, offerlet
 
 router.post('/revise-offer-letter', verifyToken, offerletterController.reviseOfferLetter);
 
-router.get('/get-all-interview-candids', verifyToken, offerletterController.getAllBenefitedCandids);
+router.get('/get-all-interview-candids&pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToken, offerletterController.getAllBenefitedCandids);
 
 router.get('/delete-benefited-candidate&:benifit_id=:id', verifyToken, offerletterController.deletebenifitForCanid);
 
