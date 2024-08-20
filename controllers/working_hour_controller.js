@@ -244,10 +244,11 @@ const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
     if ((!fromDate || !endDate || !employee_id)) {
         res.status(400).json({ message: "All filter fields are required" });
     } else {
-        const getTodayWorkingHours = await WorkingHours.find({}).
+        const getTodayWorkingHours = await WorkingHours.find({}).where("working_date").gte(fromDate)
+            .where("working_date").lte(endDate).
             populate({
                 path: "employee",
-                // match: { _id: employee_id },
+                match: { _id: employee_id },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
         total = getTodayWorkingHours.length;
