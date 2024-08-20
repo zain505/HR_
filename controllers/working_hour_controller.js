@@ -80,6 +80,8 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
 
     let finalEmployees = [];
 
+    let finalList = [];
+
     let totalRecords = 0
 
     if (searchStr == -1) {
@@ -127,10 +129,26 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                 }
             }
             totalRecords = finalEmployees.length;
-            res.status(200).json({ total: totalRecords, data: finalEmployees })
+
+            finalList = finalEmployees
+            // res.status(200).json({ total: totalRecords, data: finalEmployees })
         } else {
             totalRecords = allActiveEmployees.length;
-            res.status(200).json({ total: totalRecords, data: allActiveEmployees })
+            finalList = allActiveEmployees.map(emp => {
+                return {
+                    employee_id: emp._id,
+                    employee_name: emp.full_name,
+                    employee_department: emp.department_name,
+                    employee_email: emp.email,
+                    employee_designation: emp.designation,
+                    working_date: emp.working_date ? emp.working_date : null,
+                    work_start_time: emp.work_start_time ? emp.work_start_time : null,
+                    work_end_time: emp.work_end_time ? emp.work_end_time : null,
+                    is_half_day: emp.is_half_day ? emp.is_half_day : null,
+                    mark_absent: emp.mark_absent ? emp.mark_absent : null
+                }
+            })
+            // res.status(200).json({ total: totalRecords, data: allActiveEmployees })
         }
     } else if (searchStr != -1 && typeof (searchStr) != Number) {
         const regex = new RegExp(searchStr, 'i');
@@ -178,11 +196,38 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                 }
             }
             totalRecords = finalEmployees.length;
-            res.status(200).json({ total: totalRecords, data: finalEmployees })
+            finalList = finalEmployees
+            // res.status(200).json({ total: totalRecords, data: finalEmployees })
         } else {
             totalRecords = allActiveEmployees.length;
-            res.status(200).json({ total: totalRecords, data: allActiveEmployees })
+            finalList = allActiveEmployees.map(emp => {
+                return {
+                    employee_id: emp._id,
+                    employee_name: emp.full_name,
+                    employee_department: emp.department_name,
+                    employee_email: emp.email,
+                    employee_designation: emp.designation,
+                    working_date: emp.working_date ? emp.working_date : null,
+                    work_start_time: emp.work_start_time ? emp.work_start_time : null,
+                    work_end_time: emp.work_end_time ? emp.work_end_time : null,
+                    is_half_day: emp.is_half_day ? emp.is_half_day : null,
+                    mark_absent: emp.mark_absent ? emp.mark_absent : null
+                }
+            })
+            // res.status(200).json({ total: totalRecords, data: allActiveEmployees })
         }
+    }
+
+    if ((finalList.length >= pagesize) && (page >= 1)) {
+
+        let sliceData = finalList.slice(pagesize * (page - 1), pagesize * page);
+
+        res.status(200).json({ total: totalRecords, data: sliceData });
+
+    } else {
+
+        res.status(200).json({ total: totalRecords, data: finalList })
+
     }
 }
 
@@ -205,8 +250,8 @@ const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
                 // match: { _id: employee_id },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
-            total = getTodayWorkingHours.length;
-        res.status(200).json({total:total, data: getTodayWorkingHours });
+        total = getTodayWorkingHours.length;
+        res.status(200).json({ total: total, data: getTodayWorkingHours });
     }
 }
 
