@@ -25,13 +25,13 @@ const getUsers = async (req, res, next) => {
 
   if (searchStr == -1) {
 
-    getSignedUpAllUsers = await User.find({});
+    getSignedUpAllUsers = await User.find({}).where("user_type").ne("1");
 
   } else if (searchStr != -1 && typeof (searchStr) != Number) {
 
     const regex = new RegExp(searchStr, 'i');
 
-    getSignedUpAllUsers = await User.find({ name: { $regex: regex } });
+    getSignedUpAllUsers = await User.find({ name: { $regex: regex } }).where("user_type").ne("1");
   }
 
 
@@ -55,32 +55,52 @@ const signup = async (req, res, next) => {
 
   const getSignedUpAllUsers = await User.find({});
 
-  const hasUser = getSignedUpAllUsers.find(u => u.email === email);
+  const hasUser = getSignedUpAllUsers.find(u => (u.email === email || u.name === name));
 
   if (hasUser) {
-    res.status(400).json({message:"user already exists"});
-  }else{
+    res.status(400).json({ message: "user already exists" });
+  } else {
+    const assignUserType = (type) => {
+      let userType = "";
+      switch (type) {
+        case "admin":
+          userType = "2"
+          break;
+        case "user":
+          userType = "3"
+          break;
+        case "employee":
+          userType = "4"
+          break;
+        default:
+          userType = "0"
+          break;
+
+      }
+      return userType
+    }
     const createdUser = new User({
 
-      name, // name: name
+      name,
       email,
       password,
       role,
-      creationDate:Date.now(),
-      lastModifyDate:Date.now(),
-      isActive:true
+      creationDate: Date.now(),
+      lastModifyDate: Date.now(),
+      isActive: true,
+      user_type: assignUserType(role)
     });
     try {
       createdUser.save();
-  
+
     } catch (error) {
       res.status(400).json({ message: error });
     }
-  
+
     res.status(201).json({ user: createdUser });
   }
 
-  
+
 };
 
 const login = async (req, res, next) => {
@@ -107,12 +127,12 @@ const login = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   const { id } = req.body;
 
-  const result =  await User.findByIdAndDelete(new mongoose.Types.ObjectId(id));
+  const result = await User.findByIdAndDelete(new mongoose.Types.ObjectId(id));
 
-  if(result ==  null){
+  if (result == null) {
     res.json({ message: "Id is not correct or id does not exist" });
 
-  }else{
+  } else {
     res.json({ message: "1 record deleted" });
 
   }
@@ -120,10 +140,10 @@ const deleteUser = async (req, res, next) => {
 }
 
 const updateUser = async (req, res, next) => {
-  const { name, email, password, role,id, } = req.body;
+  const { name, email, password, role, id, } = req.body;
 
-  if(!id){
-    return res.json({message:"All fields are required"})
+  if (!id) {
+    return res.json({ message: "All fields are required" })
   }
 
   const updateUser = {
@@ -131,26 +151,27 @@ const updateUser = async (req, res, next) => {
     email,
     password,
     role,
-    lastModifyDate:Date.now()
+    lastModifyDate: Date.now()
   }
 
-  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id),updateUser);
+  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updateUser);
 
   res.json({ message: "record updated" });
 }
 
 const updateUserStatus = async (req, res, next) => {
-  const { isActive ,id } = req.body;
+  const { isActive, id } = req.body;
 
-  if(typeof(isActive != Boolean) && !id){
-    return res.json({message:"All fields are required"})
+  if (typeof (isActive != Boolean) && !id) {
+    return res.json({ message: "All fields are required" })
   }
 
   const updateUser = {
     isActive,
+    lastModifyDate: Date.now()
   }
 
-  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id),updateUser);
+  await User.findByIdAndUpdate(new mongoose.Types.ObjectId(id), updateUser);
 
   res.json({ message: "User Status Updated" });
 }

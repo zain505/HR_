@@ -9,7 +9,8 @@ const UserSchema = new Schema({
     role: { type: String, required: true },
     creationDate:{type:Date,required:false},
     lastModifyDate:{type:Date,required:false},
-    isActive:{type:Boolean,required:true,default:true}
+    isActive:{type:Boolean,required:true,default:true},
+    user_type:{ type: String, required: true }
 })
 
 module.exports=mongoose.model('User',UserSchema)
