@@ -16,4 +16,6 @@ router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToke
 
 router.get('/get-employee-working-hour/employee_id=:employee_id&fromDate=:fromDate&endDate=:endDate', verifyToken, WorkingHourController.getWorkingHourOfEmployeeByDate);
 
+router.post('/mark-all-employees-present', verifyToken, WorkingHourController.markAllEmployeesPresent);
+
 module.exports = router;

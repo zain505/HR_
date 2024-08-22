@@ -256,7 +256,43 @@ const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
     }
 }
 
+const markAllEmployeesPresent = async (req, res, next) => {
+    let today = AppUtility.formatDate(new Date())
+
+    const allEmployeesList = await Employees.find({}).where("isEmployee").equals(true);
+
+    const workingHourList = [];
+
+    if (Array.isArray(allEmployeesList)) {
+        for (let i = 0; i < allEmployeesList.length; i++) {
+            const emp = allEmployeesList[i];
+
+            if (emp && emp._id) {
+                workingHourList.push({
+                    working_date: today,
+                    work_start_time: "9:00 AM",
+                    work_end_time: "6:00 PM",
+                    is_half_day: false,
+                    mark_absent: false,
+                    creationDate: Date.now(),
+                    lastModifyDate: Date.now(),
+                    employee: emp._id
+                })
+            }
+        }
+        const result = WorkingHours.insertMany(workingHourList);
+        if(result){
+            res.status(400).json({ message: "All Records updated" })    
+        }else{
+            res.status(400).json({ message: "Records not updated" })
+        }
+    } else {
+        res.status(400).json({ message: "Employees not found attendance not updated" })
+    }
+}
+
 exports.addEmployeeWorkingHour = addEmployeeWorkingHour;
 exports.updateWorkingHour = updateWorkingHour;
 exports.getWorkingHourOfEmployee = getWorkingHourOfEmployee;
 exports.getWorkingHourOfEmployeeByDate = getWorkingHourOfEmployeeByDate;
+exports.markAllEmployeesPresent = markAllEmployeesPresent
