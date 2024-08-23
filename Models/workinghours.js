@@ -6,8 +6,8 @@ const WorkingHour = new Schema({
     working_date: { type: String, required: true },
     work_start_time: { type: String, required: true },
     work_end_time: { type: String, required: true },
-    is_half_day: { type: String, required: false, default: false },
-    mark_absent: { type: String, required: true, default: false },
+    is_half_day: { type: Boolean, required: false, default: false },
+    mark_absent: { type: Boolean, required: true, default: false },
     creationDate: { type: Date, required: false },
     lastModifyDate: { type: Date, required: false },
     employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' }
