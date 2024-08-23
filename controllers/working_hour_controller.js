@@ -17,9 +17,16 @@ const addEmployeeWorkingHour = async (req, res, next) => {
         is_half_day, mark_absent
     } = req.body;
 
-    if (!employee_id) {
+    let today = AppUtility.formatDate(new Date())
 
-        res.status(400).json({ message: "employee id is not correct" });
+    const isEmployeeWorkingHourAlreadyAdded = await WorkingHours.find({}).where("working_date").equals(today).
+    populate({
+        path: "employee",
+        match: { _id: employee_id }
+    });
+
+    if (!employee_id || isEmployeeWorkingHourAlreadyAdded) {
+        res.status(400).json({ message: "employee id is not correct or working hour already added"});
 
     } else {
         let WorkingHoursBody = new WorkingHours({
@@ -282,12 +289,12 @@ const markAllEmployeesPresent = async (req, res, next) => {
         }
         const result = WorkingHours.insertMany(workingHourList);
         if(result){
-            res.status(400).json({ message: "All Records updated" })    
+            res.status(200).json({ message: "All Records updated" });    
         }else{
-            res.status(400).json({ message: "Records not updated" })
+            res.status(400).json({ message: "Records not updated" });
         }
     } else {
-        res.status(400).json({ message: "Employees not found attendance not updated" })
+        res.status(400).json({ message: "Employees not found attendance not updated" });
     }
 }
 

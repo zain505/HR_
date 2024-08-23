@@ -25,10 +25,10 @@ const createEmployeeFromCandid = async (req, res, next) => {
   if (!findCandidate || !CandidateBenefit) {
     res.status(400).json({ message: "candidate not found or associate offer letter not found" });
   } else {
-    
+
     await Candidate.findOneAndUpdate(new mongoose.Types.ObjectId(cadid_id), { isEmployee: true })
 
-    
+
     if (findCandidate.isEmployee) {
       res.status(400).json({ message: "this candidate is already employee" });
     } else {
@@ -185,9 +185,25 @@ const getAllEmployeesData = async (req, res, next) => {
 
 }
 
+const getEmployeesById = async (req, res, next) => {
+  const employee_id = req.params.employee_id;
+  if(!employee_id){
+    res.status(400).json({message:"employee id is not correct"})
+  }else{
+    const result = await Employee.find(new mongoose.Types.ObjectId(employee_id));
+    if(!result){
+      res.status(400).json("result not found")
+    }else{
+      res.status(200).json({data:result})
+    }
+  }
+}
+
 exports.createEmployeeFromCandid = createEmployeeFromCandid;
 
 exports.updateEmployee = updateEmployee;
 
 exports.getAllEmployeesData = getAllEmployeesData;
+
+exports.getEmployeesById = getEmployeesById;
 
