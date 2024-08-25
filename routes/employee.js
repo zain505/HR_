@@ -16,6 +16,8 @@ router.get('/pageid=:pageid&pagesize=:pagesize&searchstr=:searchstr', verifyToke
 
 router.get('/get-employee:employee_id=:employee_id', verifyToken, employeeController.getAllEmployeesData);
 
+router.get('/all-employees', verifyToken, employeeController.getAllEmployeesDataWithNoPagination);
+
 
 
 module.exports = router;

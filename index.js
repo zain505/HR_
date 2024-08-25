@@ -12,6 +12,7 @@ const offerletterRoutes = require('./routes/offerLetter')
 const preArrivalRoutes = require('./routes/preArrivalChecks')
 const postArrivalRoutes = require('./routes/postArrivalChecks')
 const workingHoursRoutes = require('./routes/workingHours')
+const leaveRoutes = require('./routes/leaveApplication')
 
 
 const app = express();
@@ -36,6 +37,8 @@ app.use('/api/preArrival',preArrivalRoutes)
 app.use('/api/postArrival',postArrivalRoutes)
 
 app.use('/api/workingHour',workingHoursRoutes)
+
+app.use('/api/Leave',leaveRoutes)
 
 app.use('/', (req,res,next)=>{ 
   

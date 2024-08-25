@@ -65,6 +65,9 @@ const createEmployeeFromCandid = async (req, res, next) => {
         annual_leaves: findCandidate.annual_leaves,
         casual_leaves: findCandidate.casual_leaves,
         medical_leaves: findCandidate.medical_leaves,
+        annual_leaves_balance: findCandidate.annual_leaves,
+        casual_leaves_balance: findCandidate.casual_leaves,
+        medical_leaves_balance: findCandidate.medical_leaves,
         contract_details: findCandidate.contract_details,
         is_employee_on_reference: findCandidate.is_employee_on_reference,
         reference_name: findCandidate.reference_name,
@@ -187,16 +190,31 @@ const getAllEmployeesData = async (req, res, next) => {
 
 const getEmployeesById = async (req, res, next) => {
   const employee_id = req.params.employee_id;
-  if(!employee_id){
-    res.status(400).json({message:"employee id is not correct"})
-  }else{
+  if (!employee_id) {
+    res.status(400).json({ message: "employee id is not correct" })
+  } else {
     const result = await Employee.find(new mongoose.Types.ObjectId(employee_id));
-    if(!result){
+    if (!result) {
       res.status(400).json("result not found")
-    }else{
-      res.status(200).json({data:result})
+    } else {
+      res.status(200).json({ data: result })
     }
   }
+}
+
+const getAllEmployeesDataWithNoPagination = async (req, res, next) => {
+
+  const allEmployeesData = await Employee.find({}).where("isEmployee").equals(true);
+  const total = allEmployeesData.length;
+
+  if (allEmployeesData) {
+    res.status(200).json({ data: allEmployeesData, total })
+  } else {
+    res.status(400).json({ message: "result not found" })
+  }
+
+
+
 }
 
 exports.createEmployeeFromCandid = createEmployeeFromCandid;
@@ -206,4 +224,6 @@ exports.updateEmployee = updateEmployee;
 exports.getAllEmployeesData = getAllEmployeesData;
 
 exports.getEmployeesById = getEmployeesById;
+
+exports.getAllEmployeesDataWithNoPagination = getAllEmployeesDataWithNoPagination
 

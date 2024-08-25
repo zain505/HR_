@@ -5,7 +5,7 @@ function verifyToken(req, res, next) {
     if (!token) return res.status(401).json({ error: 'Access denied' });
     try {
         const decoded = jwt.verify(token, appConstant.secret);
-        req._id = decoded._id;
+        req.user_id = decoded._id;
         next();
     } catch (error) {
         res.status(401).json({ error: 'Invalid token' });
