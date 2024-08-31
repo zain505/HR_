@@ -193,7 +193,7 @@ const getEmployeesById = async (req, res, next) => {
   if (!employee_id) {
     res.status(400).json({ message: "employee id is not correct" })
   } else {
-    const result = await Employee.find(new mongoose.Types.ObjectId(employee_id));
+    const result = await Employee.findOne(new mongoose.Types.ObjectId(employee_id));
     if (!result) {
       res.status(400).json("result not found")
     } else {

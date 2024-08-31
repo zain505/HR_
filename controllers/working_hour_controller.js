@@ -4,6 +4,8 @@ const Email = require('../EmailController/Email')
 
 const WorkingHours = require("../Models/workinghours");
 
+const LeaveApplication = require("../Models/LeaveApplication");
+
 const Employees = require("../Models/employee");
 
 const AppUtility = require("../appUtility/appUtility");
@@ -20,13 +22,13 @@ const addEmployeeWorkingHour = async (req, res, next) => {
     let today = AppUtility.formatDate(new Date())
 
     const isEmployeeWorkingHourAlreadyAdded = await WorkingHours.find({}).where("working_date").equals(today).
-    populate({
-        path: "employee",
-        match: { _id: employee_id }
-    });
+        populate({
+            path: "employee",
+            match: { _id: employee_id }
+        });
 
     if (!employee_id || isEmployeeWorkingHourAlreadyAdded) {
-        res.status(400).json({ message: "employee id is not correct or working hour already added"});
+        res.status(400).json({ message: "employee id is not correct or working hour already added" });
 
     } else {
         let WorkingHoursBody = new WorkingHours({
@@ -268,29 +270,54 @@ const markAllEmployeesPresent = async (req, res, next) => {
 
     const allEmployeesList = await Employees.find({}).where("isEmployee").equals(true);
 
+    const todayWorkingHourListOfAllEmp = await WorkingHours.find({}).where("working_date").equals(today);
+
+    const todayLeaveEmployee = await LeaveApplication.find({}).where("leave_start_date").
+        lte(today).where("leave_end_date").gte(today);
+
     const workingHourList = [];
 
     if (Array.isArray(allEmployeesList)) {
         for (let i = 0; i < allEmployeesList.length; i++) {
             const emp = allEmployeesList[i];
-
-            if (emp && emp._id) {
+            const findTodayHour = todayWorkingHourListOfAllEmp?.find(empp => empp?.employee?._id.toString() == emp._id.toString());
+            const isEmployeeOnLeave = todayLeaveEmployee?.some(el => (el.employee?._id.toString() == emp._id.toString()) && el.is_leave_approved_by_admin);
+            if (isEmployeeOnLeave && !findTodayHour) {
                 workingHourList.push({
                     working_date: today,
-                    work_start_time: "9:00 AM",
-                    work_end_time: "6:00 PM",
+                    work_start_time: " ",
+                    work_end_time: " ",
                     is_half_day: false,
-                    mark_absent: false,
+                    mark_absent: true,
                     creationDate: Date.now(),
                     lastModifyDate: Date.now(),
                     employee: emp._id
                 })
+            } else {
+                if (emp && emp._id && !findTodayHour) {
+                    workingHourList.push({
+                        working_date: today,
+                        work_start_time: "9:00 AM",
+                        work_end_time: "6:00 PM",
+                        is_half_day: false,
+                        mark_absent: false,
+                        creationDate: Date.now(),
+                        lastModifyDate: Date.now(),
+                        employee: emp._id
+                    })
+                }
+
             }
         }
-        const result = WorkingHours.insertMany(workingHourList);
-        if(result){
-            res.status(200).json({ message: "All Records updated" });    
-        }else{
+        let result;
+        if (workingHourList.length > 0) {
+            result = WorkingHours.insertMany(workingHourList);
+        }
+        if (result) {
+            res.status(200).json({ message: "All Records updated" });
+        } else if (workingHourList.length == 0) {
+            res.status(400).json({ message: "All Employees already marked for today date if you want to update please select specific employee(s)" });
+        } else {
             res.status(400).json({ message: "Records not updated" });
         }
     } else {
