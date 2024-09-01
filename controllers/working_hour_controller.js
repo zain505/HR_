@@ -109,6 +109,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                     const ele2 = getTodayWorkingHours[j];
                     if (String(ele1._id) == String(ele2.employee?._id)) {
                         finalEmployees.push({
+                            _WHid:ele2._id,
                             employee_id: ele2._id,
                             employee_name: ele2.employee.full_name,
                             employee_department: ele2.employee.department_name,
@@ -122,6 +123,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                         });
                     } else {
                         finalEmployees.push({
+                            _WHid:ele2._id,
                             employee_id: ele1._id,
                             employee_name: ele1.full_name,
                             employee_department: ele1.department_name,
@@ -177,6 +179,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                     const ele2 = getTodayWorkingHours[j];
                     if (String(ele1?._id) == String(ele2.employee?._id)) {
                         finalEmployees.push({
+                            _WHid:ele2._id,
                             employee_id: ele2._id,
                             employee_name: ele2.employee.full_name,
                             employee_department: ele2.employee.department_name,
@@ -213,6 +216,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
             totalRecords = allActiveEmployees.length;
             finalList = allActiveEmployees.map(emp => {
                 return {
+                    ...emp,
                     employee_id: emp._id,
                     employee_name: emp.full_name,
                     employee_department: emp.department_name,
@@ -275,7 +279,7 @@ const markAllEmployeesPresent = async (req, res, next) => {
     const todayWorkingHourListOfAllEmp = await WorkingHours.find({}).where("working_date").equals(today);
 
     const todayLeaveEmployee = await LeaveApplication.find({}).where("leave_start_date").
-        lte(today).where("leave_end_date").gte(today);
+    gte(today).where("leave_end_date").lte(today);
 
     const workingHourList = [];
 
@@ -318,7 +322,7 @@ const markAllEmployeesPresent = async (req, res, next) => {
         if (result) {
             res.status(200).json({ message: "All Records updated" });
         } else if (workingHourList.length == 0) {
-            res.status(400).json({ message: "All Employees already marked for today date if you want to update please select specific employee(s)" });
+            res.status(409).json({ message: "All Employees already marked for today date if you want to update please select specific employee(s)" });
         } else {
             res.status(400).json({ message: "Records not updated" });
         }

@@ -32,7 +32,7 @@ const applicationForLeave = async (req, res, next) => {
                 leave_start_date,
                 leave_end_date,
                 leave_type,
-                total_leave_days:AppUtility.getDays(leave_start_date,leave_end_date),
+                total_leave_days: AppUtility.getDays(leave_start_date, leave_end_date),
                 leave_reason,
                 contact_number,
                 attachement,
@@ -74,7 +74,7 @@ const updateApplicationForLeave = async (req, res, next) => {
                 leave_type,
                 leave_reason,
                 contact_number,
-                total_leave_days:AppUtility.getDays(leave_start_date,leave_end_date),
+                total_leave_days: AppUtility.getDays(leave_start_date, leave_end_date),
                 attachement: attachement,
                 lastModifyDate: Date.now(),
                 creationDate: Date.now(),
@@ -106,22 +106,22 @@ const getApplyLeaveApplications = async (req, res, next) => {
 
     if (searchStr == -1) {
         listofAllAppliedLeaveReqs = await LeaveReqs.find({}).where("leave_start_date").
-            lte(today).where("leave_end_date").gte(today).
+            gte(today).where("leave_end_date").lte(today).
             populate({
                 path: "employee",
                 select: '_id full_name department_name designation'
             })
-        totalRecords = LeaveReqs.length
+        totalRecords = listofAllAppliedLeaveReqs.length
     } else if (searchStr != -1 && typeof (searchStr) != Number) {
         const regex = new RegExp(searchStr, 'i');
         listofAllAppliedLeaveReqs = await LeaveReqs.find({}).where("leave_start_date").
-            lte(today).where("leave_end_date").gte(today).
+            gte(today).where("leave_end_date").lte(today).
             populate({
                 path: "employee",
                 match: { full_name: { $regex: regex } },
                 select: '_id full_name department_name designation'
             })
-        totalRecords = LeaveReqs.length
+        totalRecords = listofAllAppliedLeaveReqs.length
     }
 
     if ((listofAllAppliedLeaveReqs.length >= pagesize) && (page >= 1)) {
