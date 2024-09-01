@@ -136,6 +136,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                         });
                     }
                 }
+                break;
             }
             totalRecords = finalEmployees.length;
 
@@ -203,6 +204,7 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                         });
                     }
                 }
+                break;
             }
             totalRecords = finalEmployees.length;
             finalList = finalEmployees
