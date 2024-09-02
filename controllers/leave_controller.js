@@ -23,7 +23,7 @@ const applicationForLeave = async (req, res, next) => {
 
     } else if (leave_type == "M" && attachement == "") {
 
-        res.status(400).json({ message: "Attachment required" });
+        res.status(400).json({ message: "Attachment required for medical leave" });
 
     } else {
         try {

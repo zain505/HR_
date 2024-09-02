@@ -10,7 +10,7 @@ const LeaveApplication = new Schema({
     contact_number: { type: String, required: true },
     total_leave_days: { type: Number, required: false },
     is_leave_approved_by_admin: { type: Boolean, required: false,default:null },
-    attachement: { type: String, required: false },
+    attachement: { file_base64str: { type: String, required: true }, file_name: { type: String, required: true } },
     creationDate: { type: Date, required: false },
     lastModifyDate: { type: Date, required: false },
     employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee',required: true }
