@@ -21,7 +21,7 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
     let today = AppUtility.formatDate(new Date())
 
-    const isEmployeeWorkingHourAlreadyAdded = await WorkingHours.find({}).where("working_date").equals(today).
+    const isEmployeeWorkingHourAlreadyAdded = await WorkingHours.findOne({}).where("working_date").equals(today).
         populate({
             path: "employee",
             match: { _id: employee_id }
@@ -109,8 +109,8 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                     const ele2 = getTodayWorkingHours[j];
                     if (String(ele1._id) == String(ele2.employee?._id)) {
                         finalEmployees.push({
-                            _WHid:ele2._id,
-                            employee_id: ele2._id,
+                            _WHid: ele2._id,
+                            employee_id: ele2.employee?._id,
                             employee_name: ele2.employee.full_name,
                             employee_department: ele2.employee.department_name,
                             employee_email: ele2.employee.email,
@@ -121,24 +121,29 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                             is_half_day: ele2.is_half_day ? ele2.is_half_day : null,
                             mark_absent: ele2.mark_absent ? ele2.mark_absent : null
                         });
-                    } else {
-                        finalEmployees.push({
-                            _WHid:ele2._id,
-                            employee_id: ele1._id,
-                            employee_name: ele1.full_name,
-                            employee_department: ele1.department_name,
-                            employee_email: ele1.email,
-                            employee_designation: ele1.designation,
-                            working_date: ele1.working_date ? ele1.working_date : null,
-                            work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
-                            work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
-                            is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
-                            mark_absent: ele1.mark_absent ? ele1.mark_absent : null
 
-                        });
+                    } else {
+                        let isItemAlreadyExist = finalEmployees.find(el => el.employee_id == ele1._id);
+                        if (isItemAlreadyExist) {
+                            continue;
+                        } else {
+                            finalEmployees.push({
+                                employee_id: ele1._id,
+                                employee_name: ele1.full_name,
+                                employee_department: ele1.department_name,
+                                employee_email: ele1.email,
+                                employee_designation: ele1.designation,
+                                working_date: ele1.working_date ? ele1.working_date : null,
+                                work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
+                                work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
+                                is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
+                                mark_absent: ele1.mark_absent ? ele1.mark_absent : null
+
+                            });
+                        }
                     }
+
                 }
-                break;
             }
             totalRecords = finalEmployees.length;
 
@@ -179,8 +184,8 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                     const ele2 = getTodayWorkingHours[j];
                     if (String(ele1?._id) == String(ele2.employee?._id)) {
                         finalEmployees.push({
-                            _WHid:ele2._id,
-                            employee_id: ele2._id,
+                            _WHid: ele2._id,
+                            employee_id: ele2.employee?._id,
                             employee_name: ele2.employee.full_name,
                             employee_department: ele2.employee.department_name,
                             employee_email: ele2.employee.email,
@@ -192,22 +197,27 @@ const getWorkingHourOfEmployee = async (req, res, next) => {
                             mark_absent: ele2.mark_absent ? ele2.mark_absent : null
                         });
                     } else {
-                        finalEmployees.push({
-                            employee_id: ele1._id,
-                            employee_name: ele1.full_name,
-                            employee_department: ele1.department_name,
-                            employee_email: ele1.email,
-                            employee_designation: ele1.designation,
-                            working_date: ele1.working_date ? ele1.working_date : null,
-                            work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
-                            work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
-                            is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
-                            mark_absent: ele1.mark_absent ? ele1.mark_absent : null
+                        let isItemAlreadyExist = finalEmployees.find(el => el.employee_id == ele1._id);
+                        if (isItemAlreadyExist) {
+                            continue;
+                        } else {
+                            finalEmployees.push({
+                                employee_id: ele1._id,
+                                employee_name: ele1.full_name,
+                                employee_department: ele1.department_name,
+                                employee_email: ele1.email,
+                                employee_designation: ele1.designation,
+                                working_date: ele1.working_date ? ele1.working_date : null,
+                                work_start_time: ele1.work_start_time ? ele1.work_start_time : null,
+                                work_end_time: ele1.work_end_time ? ele1.work_end_time : null,
+                                is_half_day: ele1.is_half_day ? ele1.is_half_day : null,
+                                mark_absent: ele1.mark_absent ? ele1.mark_absent : null
 
-                        });
+                            });
+                        }
                     }
+
                 }
-                break;
             }
             totalRecords = finalEmployees.length;
             finalList = finalEmployees
@@ -279,7 +289,7 @@ const markAllEmployeesPresent = async (req, res, next) => {
     const todayWorkingHourListOfAllEmp = await WorkingHours.find({}).where("working_date").equals(today);
 
     const todayLeaveEmployee = await LeaveApplication.find({}).where("leave_start_date").
-    gte(today).where("leave_end_date").lte(today);
+        gte(today).where("leave_end_date").lte(today);
 
     const workingHourList = [];
 
