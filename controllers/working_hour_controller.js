@@ -23,7 +23,7 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
     const todayWorkingHoursList = await WorkingHours.find({}).where("working_date").equals(today);
 
-    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el=>el.employee.toString() == employee_id.toString());
+    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el=>el?.employee?.toString() == employee_id?.toString());
 
 
     if (!employee_id || isIncomingEmployeeMarkedTodayHour) {
@@ -66,7 +66,7 @@ const updateWorkingHour = async (req, res, next) => {
         lastModifyDate: Date.now(),
     };
 
-    const result = await PreArrivalCheckList.findOneAndUpdate(new mongoose.Types.ObjectId(id), body)
+    const result = await WorkingHours.findOneAndUpdate(new mongoose.Types.ObjectId(id), body);
 
     if (result) {
         res.status(200).json({ message: "employee working hour Updated" });
