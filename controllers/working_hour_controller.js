@@ -21,13 +21,13 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
     let today = AppUtility.formatDate(new Date())
 
-    const isEmployeeWorkingHourAlreadyAdded = await WorkingHours.findOne({}).where("working_date").equals(today).
-        populate({
-            path: "employee",
-            match: { _id: employee_id }
-        });
+    const todayWorkingHoursList = await WorkingHours.find({}).where("working_date").equals(today);
 
-    if (!employee_id || isEmployeeWorkingHourAlreadyAdded) {
+    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el=>el.employee.toString() == employee_id.toString());
+
+
+    if (!employee_id || isIncomingEmployeeMarkedTodayHour) {
+
         res.status(400).json({ message: "employee id is not correct or working hour already added" });
 
     } else {
@@ -278,7 +278,7 @@ const markAllEmployeesPresent = async (req, res, next) => {
     const todayWorkingHourListOfAllEmp = await WorkingHours.find({}).where("working_date").equals(today);
 
     const todayLeaveEmployee = await LeaveApplication.find({}).where("leave_start_date").
-        gte(today).where("leave_end_date").lte(today);
+        lte(today).where("leave_end_date").gte(today);
 
     const workingHourList = [];
 
