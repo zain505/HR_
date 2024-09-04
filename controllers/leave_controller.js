@@ -145,6 +145,7 @@ const LeaveApprovalByAdmin = async (req, res, next) => {
     if (!id) {
         res.status(400).json({ message: "id is not correct" });
     } else if (is_leave_approved_by_admin) {
+        let leaveBody;
         let body = {
             is_leave_approved_by_admin
         }
@@ -152,30 +153,28 @@ const LeaveApprovalByAdmin = async (req, res, next) => {
         if (is_leave_approved_by_admin) {
             const TargetedEmployee = await Employees.findOne(new mongoose.Types.ObjectId(employee_id))
 
-            let body;
+           
 
             if (leave_type == "A") {
-                body = {
+                leaveBody = {
                     annual_leaves_balance: TargetedEmployee.annual_leaves_balance - noOfDays
                 }
             } else if (leave_type == "C") {
-                body = {
-                    casual_leaves: TargetedEmployee.casual_leaves_balance - noOfDays
+                leaveBody = {
+                    casual_leaves_balance: TargetedEmployee.casual_leaves_balance - noOfDays
                 }
             } else if (leave_type == "M") {
-                body = {
-                    casual_leaves: TargetedEmployee.casual_leaves_balance - noOfDays
+                leaveBody = {
+                    medical_leaves_balance: TargetedEmployee.medical_leaves_balance - noOfDays
                 }
             }
-
-
-
         }
 
         try {
-            await LeaveReqs.findOneAndUpdate(new mongoose.Types.ObjectId(id), body)
-            await Employees.findOneAndUpdate(new mongoose.Types.ObjectId(employee_id), body);
-            res.status(200).json({ message: `Admin has aproved leave` });
+            await LeaveReqs.findOneAndUpdate(new mongoose.Types.ObjectId(id), body);
+
+            await Employees.findOneAndUpdate(new mongoose.Types.ObjectId(employee_id), leaveBody);
+            res.status(200).json({ message: `Admin has approved leave` });
         } catch (error) {
             res.status(400).json({ message: "Admin approval failed" });
         }
