@@ -44,7 +44,7 @@ const applicationForLeave = async (req, res, next) => {
 
             res.status(200).json({ message: "Leave applied waiting for admin approval" });
         } catch (error) {
-            res.status(400).json({ message: "Leave not applied"+error });
+            res.status(400).json({ message: "Leave not applied" + error });
         }
     }
 
@@ -105,8 +105,8 @@ const getApplyLeaveApplications = async (req, res, next) => {
     let totalRecords = 0
 
     if (searchStr == -1) {
-        listofAllAppliedLeaveReqs = await LeaveReqs.find({}).where("leave_start_date").
-            gte(today).where("leave_end_date").lte(today).
+        listofAllAppliedLeaveReqs = await LeaveReqs.find({}).
+            where("leave_end_date").gte(today).
             populate({
                 path: "employee",
                 select: '_id full_name department_name designation'
@@ -114,8 +114,8 @@ const getApplyLeaveApplications = async (req, res, next) => {
         totalRecords = listofAllAppliedLeaveReqs.length
     } else if (searchStr != -1 && typeof (searchStr) != Number) {
         const regex = new RegExp(searchStr, 'i');
-        listofAllAppliedLeaveReqs = await LeaveReqs.find({}).where("leave_start_date").
-            gte(today).where("leave_end_date").lte(today).
+        listofAllAppliedLeaveReqs = await LeaveReqs.find({}).
+            where("leave_end_date").gte(today).
             populate({
                 path: "employee",
                 match: { full_name: { $regex: regex } },
@@ -143,7 +143,7 @@ const LeaveApprovalByAdmin = async (req, res, next) => {
     const { id, is_leave_approved_by_admin, employee_id, leave_type, noOfDays } = req.body;
 
     if (!id) {
-        res.status(400).json({ message: "bad request" });
+        res.status(400).json({ message: "id is not correct" });
     } else if (is_leave_approved_by_admin) {
         let body = {
             is_leave_approved_by_admin
@@ -184,7 +184,7 @@ const LeaveApprovalByAdmin = async (req, res, next) => {
             is_leave_approved_by_admin
         }
         try {
-            await LeaveReqs.findOneAndUpdate(new mongoose.Types.ObjectId(id), body)
+            await LeaveReqs.findOneAndDelete(new mongoose.Types.ObjectId(id))
             res.status(200).json({ message: `Admin has rejected leave` });
         } catch (error) {
             res.status(400).json({ message: "Admin rejection failed" });
