@@ -4,7 +4,7 @@ const formatDate= (date) =>{
     let month = new Date(date).getMonth()+1;
     let year = new Date(date).getFullYear();
 
-    return `${day}-${month}-${year}`;
+    return `${day>10?day:"0"+day}-${month>10?month:"0"+month}-${year}`;
 
 }
 
