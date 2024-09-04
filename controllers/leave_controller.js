@@ -44,7 +44,7 @@ const applicationForLeave = async (req, res, next) => {
 
             res.status(200).json({ message: "Leave applied waiting for admin approval" });
         } catch (error) {
-            res.status(400).json({ message: "Leave not applied" });
+            res.status(400).json({ message: "Leave not applied"+error });
         }
     }
 
