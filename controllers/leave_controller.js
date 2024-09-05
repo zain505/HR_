@@ -16,6 +16,27 @@ const applicationForLeave = async (req, res, next) => {
         leave_type, leave_reason, contact_number,
         attachement
     } = req.body;
+
+    const employeeDaysCount = AppUtility.getDays(leave_start_date, leave_end_date);
+
+    const findTargetEmployee = await Employees.findOne({_id:new mongoose.Types.ObjectId(employee)}).where("isEmployee").equals(true);
+
+    let leaveExceeds = false;
+
+    if(leave_type == "A"){
+        if(employeeDaysCount > findTargetEmployee.annual_leaves_balance){
+            leaveExceeds = true;
+        }
+    }else if(leave_type == "C"){
+        if(employeeDaysCount > findTargetEmployee.casual_leaves_balance){
+            leaveExceeds = true;
+        }
+    }else if(leave_type == "M"){
+        if(employeeDaysCount > findTargetEmployee.medical_leaves_balance){
+            leaveExceeds = true;
+        }
+    }
+
     if (!employee || !leave_start_date || !leave_end_date ||
         !leave_type || !leave_reason || !contact_number) {
 
@@ -25,6 +46,8 @@ const applicationForLeave = async (req, res, next) => {
 
         res.status(400).json({ message: "Attachment required for medical leave" });
 
+    } else if (leaveExceeds) {
+        res.status(400).json({ message: "Leave balance exceeds" });
     } else {
         try {
             let LeaveApplicationObj = new LeaveReqs({
@@ -153,7 +176,7 @@ const LeaveApprovalByAdmin = async (req, res, next) => {
         if (is_leave_approved_by_admin) {
             const TargetedEmployee = await Employees.findOne(new mongoose.Types.ObjectId(employee_id))
 
-           
+
 
             if (leave_type == "A") {
                 leaveBody = {
