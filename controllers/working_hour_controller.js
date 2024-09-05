@@ -23,7 +23,7 @@ const addEmployeeWorkingHour = async (req, res, next) => {
 
     const todayWorkingHoursList = await WorkingHours.find({}).where("working_date").equals(today);
 
-    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el=>el?.employee?.toString() == employee_id?.toString());
+    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el => el?.employee?.toString() == employee_id?.toString());
 
 
     if (!employee_id || isIncomingEmployeeMarkedTodayHour) {
@@ -265,8 +265,9 @@ const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
                 match: { _id: employee_id },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
-        total = getTodayWorkingHours.length;
-        res.status(200).json({ total: total, data: getTodayWorkingHours });
+        const filterWorkinHours = getTodayWorkingHours.filter(el => el.employee != null);
+        total = filterWorkinHours.length;
+        res.status(200).json({ total: total, data: filterWorkinHours });
     }
 }
 
