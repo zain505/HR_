@@ -267,7 +267,8 @@ const getWorkingHourOfEmployeeByDate = async (req, res, next) => {
                 match: { _id: employee_id },
                 select: '_id full_name department_name designation experience_in_years is_candidate_interview_accept_reject is_candidate_accept_offer'
             });
-        const filterByDate = getTodayWorkingHours.filter(el => {
+        const removeNullEmployees = getTodayWorkingHours.filter(el => el?.employee != null);
+        const filterByDate = removeNullEmployees.filter(el => {
             return new Date(AppUtility.formatDate(el.working_date)).toISOString() >= fd.toISOString() && new Date(AppUtility.formatDate(el.working_date)).toISOString() <= td.toISOString();
         });
         total = filterByDate.length;
