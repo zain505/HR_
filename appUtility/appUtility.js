@@ -19,5 +19,12 @@ const getDays = (startDate, endDate) => {
 
 }
 
+const formDate = (date) =>{
+    let splitDate = date.split("-");
+    return new Date(`${splitDate[2]}-${splitDate[1]}-${splitDate[0]}`);
+}
+
+
 exports.formatDate = formatDate
 exports.getDays = getDays
+exports.formDate = formDate
