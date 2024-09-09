@@ -19,17 +19,14 @@ const addEmployeeWorkingHour = async (req, res, next) => {
         is_half_day, mark_absent
     } = req.body;
 
-    let today = AppUtility.formatDate(new Date())
+    const todayWorkingHoursList = await WorkingHours.findOne().and([{ working_date: working_date }, { employee: employee_id }]);
 
-    const todayWorkingHoursList = await WorkingHours.find({}).where("working_date").equals(today);
+    if (!employee_id) {
 
-    const isIncomingEmployeeMarkedTodayHour = todayWorkingHoursList.find(el => el?.employee?.toString() == employee_id?.toString());
+        res.status(400).json({ message: "employee id is not correct" });
 
-
-    if (!employee_id || isIncomingEmployeeMarkedTodayHour) {
-
-        res.status(400).json({ message: "employee id is not correct or working hour already added" });
-
+    } else if (todayWorkingHoursList) {
+        res.status(400).json({ message: "working hour already added" });
     } else {
         let WorkingHoursBody = new WorkingHours({
             working_date,
@@ -66,7 +63,7 @@ const updateWorkingHour = async (req, res, next) => {
         lastModifyDate: Date.now(),
     };
 
-    const result = await WorkingHours.findOneAndUpdate(new mongoose.Types.ObjectId(id), body);
+    const result = await WorkingHours.findByIdAndUpdate(new mongoose.Types.ObjectId(id), body);
 
     if (result) {
         res.status(200).json({ message: "employee working hour Updated" });
